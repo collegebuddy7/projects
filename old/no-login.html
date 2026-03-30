@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>College Buddy – Project in 40 Days</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{
+  --navy:#1b3a5c; --navy2:#254e7a;
+  --green:#52a823; --green2:#3d8019;
+  --gold:#f5a623; --red:#ef4444;
+  --bg:#f0f4f8; --card:#fff;
+  --border:#e2e8f0; --text:#1e293b;
+  --muted:#64748b; --surface2:#f8fafc;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;}
+
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* NAV */
+.top-nav{background:#fff;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(27,58,92,.08);border-bottom:1.5px solid var(--border);}
+.nav-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:.7rem;padding:.45rem 1rem;}
+.nav-logo{height:40px;object-fit:contain;flex-shrink:0;}
+.nav-title{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.9rem;flex:1;line-height:1.2;}
+.nav-title small{display:block;font-size:.65rem;color:var(--green);font-weight:700;}
+.nav-info-btn{background:var(--navy);color:#fff;border:none;border-radius:50%;width:30px;height:30px;font-size:.8rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.nav-info-btn:hover{background:var(--green);}
+
+/* INTERNSHIP POPUP */
+.ib-popup{display:none;position:fixed;top:62px;right:.75rem;z-index:500;width:min(310px,calc(100vw - 1.5rem));animation:fadeDown .25s ease;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.ib-card{background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(27,58,92,.16);border:2px solid var(--gold);overflow:hidden;}
+.ib-head{background:linear-gradient(135deg,var(--navy),#254e7a);padding:.7rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+.ib-close{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ib-body{padding:.8rem 1rem;}
+.ib-step{display:flex;align-items:flex-start;gap:.45rem;margin-bottom:.5rem;font-size:.76rem;color:#334155;line-height:1.4;}
+.ib-num{background:var(--green);color:#fff;border-radius:50%;width:17px;height:17px;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;}
+.ib-wa{display:block;text-align:center;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:9px;padding:.5rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;margin-top:.55rem;}
+
+/* HERO */
+.hero-band{background:linear-gradient(135deg,#1b3a5c 0%,#1e4d7a 50%,#1a5e38 100%);padding:1.4rem 1rem 1.8rem;text-align:center;position:relative;overflow:hidden;}
+.hero-band::after{content:'{ }';position:absolute;font-size:8rem;font-family:'Nunito',sans-serif;font-weight:900;color:rgba(255,255,255,.04);right:-1rem;bottom:-1.5rem;pointer-events:none;}
+.hero-chip{display:inline-flex;align-items:center;gap:.25rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:.22rem .7rem;color:#a8e063;font-size:.7rem;font-weight:600;margin-bottom:.45rem;}
+.hero-band h1{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:clamp(1.2rem,5vw,1.75rem);line-height:1.2;}
+.hero-band h1 em{color:var(--gold);font-style:normal;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.76rem;margin-top:.2rem;}
+.hero-pills{display:flex;justify-content:center;gap:.5rem;margin-top:.75rem;flex-wrap:wrap;}
+.h-pill{display:inline-flex;align-items:center;gap:.3rem;border-radius:7px;padding:.28rem .7rem;font-size:.72rem;font-weight:600;}
+.hp-red{background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.4);color:#fca5a5;}
+.hp-gold{background:rgba(245,166,35,.18);border:1px solid rgba(245,166,35,.4);color:var(--gold);}
+
+/* STEP BAR */
+.step-bar{display:flex;justify-content:center;align-items:center;gap:0;margin-top:1rem;}
+.sc{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.25);color:rgba(255,255,255,.4);font-family:'Nunito',sans-serif;font-weight:900;font-size:.68rem;display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0;}
+.sc.active{border-color:var(--gold);background:var(--gold);color:var(--navy);}
+.sc.done{border-color:var(--green);background:var(--green);color:#fff;}
+.sl{width:28px;height:2px;background:rgba(255,255,255,.18);margin:0 2px;flex-shrink:0;}
+.sl.done{background:var(--green);}
+.prog-bar{background:rgba(255,255,255,.12);border-radius:99px;height:4px;margin:.7rem auto 0;max-width:260px;}
+.prog-fill{height:4px;border-radius:99px;background:linear-gradient(90deg,var(--gold),#ffd95e);width:0%;transition:width .35s ease;}
+.prog-txt{color:rgba(255,255,255,.45);font-size:.65rem;margin-top:.22rem;}
+
+/* FORM */
+.form-wrap{max-width:520px;margin:1.1rem auto 0;padding:0 1rem 5rem;flex:1;}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,58,92,.08);overflow:hidden;animation:up .35s ease both;}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.cs{padding:1.3rem 1.15rem;}
+@media(min-width:480px){.cs{padding:1.6rem 1.6rem;}}
+.sec-lbl{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.9rem;margin-bottom:.9rem;display:flex;align-items:center;gap:.35rem;}
+.sec-lbl span{font-size:.66rem;background:var(--navy);color:#fff;border-radius:99px;padding:.08rem .48rem;font-weight:700;}
+.ref-bar{display:none;align-items:center;gap:.45rem;background:linear-gradient(90deg,#f0fae8,#e8f4ff);border:1.5px solid #b6dfa0;border-radius:10px;padding:.55rem .85rem;margin-bottom:.9rem;font-size:.78rem;color:var(--navy);}
+.ref-bar strong{color:#3d8019;}
+
+/* FIELDS */
+.field{margin-bottom:.9rem;}
+.lbl{display:block;font-weight:600;font-size:.78rem;color:#334155;margin-bottom:.25rem;}
+.req{color:var(--red);}
+.fi{width:100%;border:2px solid var(--border);border-radius:9px;padding:.58rem .85rem;font-family:'Poppins',sans-serif;font-size:.84rem;color:var(--text);background:#f8fafc;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(82,168,35,.11);background:#fff;}
+.fi.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,68,68,.09);}
+select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%231b3a5c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center;padding-right:2rem;cursor:pointer;}
+.et{font-size:.69rem;color:var(--red);margin-top:.2rem;display:none;}
+
+/* PIN */
+.pin-row{display:flex;gap:.6rem;justify-content:center;margin-top:.1rem;}
+.pin-box{width:52px;height:56px;border:2px solid var(--border);border-radius:10px;font-size:1.4rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;color:var(--navy);background:#f8fafc;outline:none;transition:border-color .2s,box-shadow .2s;}
+.pin-box:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(82,168,35,.12);background:#fff;}
+.pin-box.err{border-color:var(--red);}
+.pin-hint{font-size:.69rem;color:var(--muted);text-align:center;margin-top:.3rem;}
+
+/* MODE TABS */
+.mode-tabs{display:flex;background:#f1f5f9;border-radius:10px;padding:.2rem;margin-bottom:1rem;gap:.2rem;}
+.mode-tab{flex:1;border:none;background:transparent;border-radius:8px;padding:.5rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all .2s;}
+.mode-tab.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px rgba(27,58,92,.1);}
+
+/* RADIO */
+.rg{display:flex;flex-wrap:wrap;gap:.38rem;}
+.rp{display:flex;align-items:center;gap:.32rem;padding:.38rem .72rem;border:2px solid var(--border);border-radius:99px;cursor:pointer;font-size:.78rem;background:#f8fafc;transition:all .15s;user-select:none;}
+.rp:hover{border-color:var(--green);background:#f0fae8;}
+.rp input{accent-color:var(--green);width:12px;height:12px;}
+.rp.sel{border-color:var(--green);background:#f0fae8;font-weight:700;color:var(--navy);}
+
+/* QUESTION CARDS */
+.qcard{background:#fff;border:1.5px solid var(--border);border-radius:13px;padding:.85rem 1rem;margin-bottom:.75rem;box-shadow:0 2px 8px rgba(27,58,92,.05);transition:border-color .2s;}
+.qcard.answered{border-color:#b6dfa0;}
+.qcard-q{font-weight:600;font-size:.82rem;color:var(--navy);margin-bottom:.6rem;}
+.qcard-opts{display:flex;gap:.4rem;flex-wrap:wrap;}
+.qopt{display:flex;align-items:center;gap:.3rem;padding:.38rem .8rem;border:2px solid var(--border);border-radius:99px;cursor:pointer;font-size:.78rem;background:#f8fafc;transition:all .15s;user-select:none;}
+.qopt:hover{border-color:var(--green);background:#f0fae8;}
+.qopt input{accent-color:var(--green);width:12px;height:12px;}
+.qopt.sel{border-color:var(--green);background:#f0fae8;font-weight:700;color:var(--navy);}
+
+/* PROJECT TYPE */
+.pt-grid{display:grid;gap:.45rem;}
+.pt-card{border:2px solid var(--border);border-radius:11px;padding:.65rem .85rem;cursor:pointer;transition:all .18s;background:#f8fafc;display:flex;align-items:center;gap:.55rem;}
+.pt-card:hover{border-color:var(--green);background:#f0fae8;}
+.pt-card.sel{border-color:var(--green);background:#f0fae8;}
+.pt-card input{accent-color:var(--green);width:14px;height:14px;flex-shrink:0;}
+.pt-card-t{font-size:.8rem;font-weight:600;color:var(--navy);}
+.pt-card-s{font-size:.68rem;color:var(--muted);}
+.proj-more{display:none;margin-top:.5rem;}
+.proj-more.show{display:block;}
+.intro-box{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fcd34d;border-radius:11px;padding:.7rem .9rem;margin-bottom:.8rem;font-size:.76rem;color:#78350f;line-height:1.6;}
+.intro-box strong{color:#92400e;}
+
+/* BUTTONS */
+.btn{width:100%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:11px;padding:.88rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;box-shadow:0 4px 14px rgba(82,168,35,.34);transition:transform .15s,box-shadow .15s;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(82,168,35,.42);}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none;}
+@keyframes sp{to{transform:rotate(360deg)}}
+hr.dv{border:none;border-top:1.5px solid #f1f5f9;margin:.85rem 0;}
+.foot{text-align:center;font-size:.64rem;color:#94a3b8;margin-top:.65rem;padding-bottom:.5rem;}
+
+/* POPUPS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;align-items:center;justify-content:center;padding:1rem;}
+.overlay.show{display:flex;}
+.pop-card{background:#fff;border-radius:18px;padding:1.4rem 1.2rem;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.18);animation:up .3s ease;}
+.pop-icon{font-size:2.2rem;margin-bottom:.35rem;}
+.pop-card h3{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:1.05rem;margin-bottom:.3rem;}
+.pop-card p{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:.9rem;}
+.pop-btn{width:100%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:11px;padding:.75rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:.92rem;cursor:pointer;margin-bottom:.4rem;}
+.pop-btn-ghost{width:100%;background:transparent;border:2px solid var(--border);border-radius:11px;padding:.65rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--muted);cursor:pointer;}
+
+/* ══════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════ */
+#screen-dash{padding-bottom:70px;}
+.dash-header{background:linear-gradient(135deg,#1b3a5c 0%,#1e4d7a 55%,#1a5e38 100%);padding:1.2rem 1rem 1.6rem;position:relative;overflow:hidden;}
+.dash-header::after{content:'{ }';position:absolute;font-size:7rem;font-family:'Nunito',sans-serif;font-weight:900;color:rgba(255,255,255,.04);right:-.5rem;bottom:-1rem;pointer-events:none;}
+.dash-top{max-width:520px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.dash-logo{height:36px;object-fit:contain;}
+.dash-greeting{max-width:520px;margin:.75rem auto 0;}
+.dash-greeting p{color:rgba(255,255,255,.6);font-size:.75rem;}
+.dash-greeting h2{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:1.3rem;}
+.dash-greeting h2 span{color:var(--gold);}
+
+.tab-content{display:none;flex:1;max-width:520px;margin:0 auto;padding:1rem 1rem 0;width:100%;}
+.tab-content.active{display:block;}
+
+/* BOTTOM NAV — 4 tabs */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1.5px solid var(--border);box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:300;height:62px;}
+.bn-inner{max-width:520px;margin:0 auto;display:flex;height:100%;}
+.bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.18rem;border:none;background:transparent;cursor:pointer;color:var(--muted);transition:color .2s;font-size:.62rem;font-family:'Poppins',sans-serif;font-weight:500;}
+.bn-tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.bn-tab.active{color:var(--green);}
+.bn-tab.active svg{stroke:var(--green);}
+
+/* HOME TAB */
+/* Referral link card */
+.ref-link-card{background:linear-gradient(135deg,var(--navy),#254e7a);border-radius:14px;padding:.85rem 1rem;margin-bottom:.75rem;}
+.rlc-label{color:rgba(255,255,255,.5);font-size:.63rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.35rem;display:flex;align-items:center;gap:.35rem;}
+.rlc-link-row{display:flex;align-items:center;gap:.55rem;}
+.rlc-link{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.38rem .65rem;font-size:.72rem;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Poppins',sans-serif;}
+.copy-link-btn{background:var(--green);border:none;border-radius:8px;padding:.38rem .75rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .2s;display:flex;align-items:center;gap:.28rem;}
+.copy-link-btn:hover{background:var(--green2);}
+.copy-link-btn.copied{background:#128c7e;}
+
+/* Action cards */
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.75rem;}
+.ac{border-radius:13px;padding:.85rem .75rem;text-align:center;border:2px solid;}
+.ac-g{background:#f0fae8;border-color:#b6dfa0;}
+.ac-b{background:#e8f4ff;border-color:#93c5fd;}
+.ac-icon{font-size:1.5rem;margin-bottom:.28rem;}
+.ac-title{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.82rem;margin-bottom:.18rem;}
+.ac-sub{font-size:.68rem;color:var(--muted);margin-bottom:.6rem;line-height:1.4;}
+.ac-btn{display:inline-flex;align-items:center;justify-content:center;gap:.28rem;border:none;border-radius:9px;padding:.48rem .85rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.76rem;cursor:pointer;text-decoration:none;transition:transform .15s;}
+.ac-btn:hover{transform:translateY(-1px);}
+.ac-btn-green{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 3px 10px rgba(37,211,102,.32);}
+.ac-btn-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;box-shadow:0 3px 10px rgba(59,130,246,.3);}
+
+/* Referral stats */
+.ref-stat-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(27,58,92,.07);border:1.5px solid var(--border);padding:.9rem 1rem;margin-bottom:.75rem;}
+.rsc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;}
+.rsc-title{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.88rem;}
+.rsc-count{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border-radius:99px;padding:.18rem .65rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;}
+.ref-list{display:flex;flex-direction:column;gap:.4rem;}
+.ref-item{display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;background:#f8fafc;border-radius:9px;font-size:.78rem;color:var(--navy);}
+.ref-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ref-empty{text-align:center;padding:1rem;color:var(--muted);font-size:.78rem;}
+
+/* CLASSES TAB */
+.class-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(27,58,92,.07);border:1.5px solid var(--border);overflow:hidden;margin-bottom:.75rem;}
+.cc-header{background:linear-gradient(135deg,var(--navy),#254e7a);padding:.7rem 1rem;display:flex;align-items:center;gap:.5rem;}
+.cc-header-txt{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:.88rem;}
+.cc-body{padding:.85rem 1rem;}
+.cc-row{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.55rem;font-size:.78rem;color:#334155;line-height:1.45;}
+.cc-link{display:inline-flex;align-items:center;gap:.3rem;background:linear-gradient(135deg,#ff0000,#cc0000);color:#fff;text-decoration:none;border-radius:9px;padding:.5rem .9rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;margin-top:.4rem;box-shadow:0 3px 10px rgba(220,0,0,.28);}
+.roadmap-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(27,58,92,.07);border:1.5px solid var(--border);padding:.9rem 1rem;margin-bottom:.75rem;}
+.rm-title{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.88rem;margin-bottom:.7rem;}
+.rm-step{display:flex;align-items:flex-start;gap:.55rem;margin-bottom:.6rem;}
+.rm-dot{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rm-txt{font-size:.78rem;color:#334155;line-height:1.5;}
+.rm-txt strong{color:var(--navy);display:block;font-weight:600;font-size:.8rem;}
+.rm-days{font-size:.66rem;color:var(--muted);}
+.no-class{text-align:center;padding:2rem 1rem;color:var(--muted);}
+.no-class .nc-icon{font-size:2.5rem;margin-bottom:.5rem;}
+.no-class p{font-size:.8rem;line-height:1.55;}
+
+/* ══════════════════════════
+   BUDDY TAB (Chat)
+══════════════════════════ */
+#tab-buddy{
+  display:none;flex-direction:column;
+  height:calc(100vh - 62px);
+  max-width:100% !important;
+  padding:0 !important;
+  position:fixed;bottom:62px;left:0;right:0;top:0;
+  background:var(--bg);
+  z-index:50;
+}
+#tab-buddy.active{display:flex;}
+
+.buddy-nav{background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 2px 10px rgba(27,58,92,.06);flex-shrink:0;}
+.buddy-nav-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:.65rem;padding:.52rem 1rem;}
+.buddy-logo{height:32px;object-fit:contain;flex-shrink:0;}
+.buddy-nav-name{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.9rem;}
+.buddy-nav-status{font-size:.67rem;color:var(--green);font-weight:600;display:flex;align-items:center;gap:.28rem;margin-top:.04rem;}
+.bstatus-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+#chatBox{
+  flex:1;overflow-y:auto;padding:1rem;
+  display:flex;flex-direction:column;gap:.65rem;
+  max-width:520px;width:100%;margin:0 auto;
+}
+#chatBox::-webkit-scrollbar{width:3px;}
+#chatBox::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+.welcome-card-buddy{
+  background:linear-gradient(135deg,var(--navy),#254e7a);
+  border-radius:20px;padding:1.3rem 1.15rem;text-align:center;animation:up .4s ease;
+}
+.w-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);margin:0 auto .55rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.welcome-card-buddy h2{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:1rem;}
+.welcome-card-buddy h2 em{color:var(--gold);font-style:normal;}
+.welcome-card-buddy p{color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.25rem;line-height:1.55;}
+.lang-chips{display:flex;gap:.32rem;justify-content:center;margin-top:.55rem;flex-wrap:wrap;}
+.lang-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:99px;padding:.16rem .6rem;font-size:.66rem;color:#a8e063;font-weight:700;}
+
+/* Bubbles */
+.msg-row{display:flex;gap:.45rem;animation:up .22s ease;}
+.msg-row.user-msg{flex-direction:row-reverse;}
+.msg-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;align-self:flex-end;margin-bottom:1.15rem;}
+.msg-row .msg-av{background:linear-gradient(135deg,var(--navy),#254e7a);}
+.msg-row.user-msg .msg-av{background:linear-gradient(135deg,var(--green),var(--green2));}
+.msg-col{display:flex;flex-direction:column;max-width:78%;}
+.msg-row.user-msg .msg-col{align-items:flex-end;}
+.msg-bub{padding:.68rem .95rem;border-radius:18px;font-size:.83rem;line-height:1.65;box-shadow:0 1px 6px rgba(27,58,92,.08);}
+.msg-row .msg-bub{background:#fff;color:var(--text);border-bottom-left-radius:4px;}
+.msg-row.user-msg .msg-bub{background:linear-gradient(135deg,var(--navy),#254e7a);color:#fff;border-bottom-right-radius:4px;}
+.msg-bub p{margin-bottom:.32rem;}
+.msg-bub p:last-child{margin-bottom:0;}
+.msg-bub strong{font-weight:700;}
+.msg-bub ul,.msg-bub ol{padding-left:1.1rem;margin:.22rem 0;}
+.msg-bub li{margin-bottom:.18rem;}
+.msg-bub code{background:rgba(82,168,35,.1);border-radius:5px;padding:.07rem .3rem;font-size:.77rem;font-family:monospace;}
+.msg-row.user-msg .msg-bub code{background:rgba(255,255,255,.15);}
+.msg-bub pre{background:rgba(27,58,92,.06);border-radius:10px;padding:.55rem .75rem;overflow-x:auto;margin:.3rem 0;}
+.msg-bub pre code{background:none;padding:0;}
+.msg-time{font-size:.58rem;color:var(--muted);margin-top:.18rem;padding:0 .15rem;}
+.msg-row.user-msg .msg-time{text-align:right;}
+
+/* Typing */
+.typing-bub{background:#fff;border-radius:18px;border-bottom-left-radius:4px;padding:.62rem .85rem;box-shadow:0 1px 6px rgba(27,58,92,.08);display:flex;align-items:center;gap:.32rem;}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.2s infinite ease-in-out;}
+.typing-dot:nth-child(2){animation-delay:.18s;}
+.typing-dot:nth-child(3){animation-delay:.36s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+/* Suggestions */
+#sugWrap{padding:.38rem 1rem .28rem;max-width:520px;width:100%;margin:0 auto;flex-shrink:0;}
+.suggestions{display:flex;gap:.38rem;flex-wrap:nowrap;overflow-x:auto;padding-bottom:.15rem;}
+.suggestions::-webkit-scrollbar{display:none;}
+.sug-chip{background:#fff;border:1.5px solid var(--border);border-radius:99px;padding:.3rem .75rem;font-size:.69rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'Nunito',sans-serif;flex-shrink:0;}
+.sug-chip:hover{border-color:var(--green);color:#3d8019;background:rgba(82,168,35,.07);}
+
+/* Chat input */
+.chat-input-bar{background:#fff;border-top:1.5px solid var(--border);box-shadow:0 -3px 12px rgba(27,58,92,.06);padding:.58rem 1rem;flex-shrink:0;}
+.chat-input-inner{max-width:520px;margin:0 auto;display:flex;gap:.45rem;align-items:flex-end;}
+#userInput{flex:1;border:2px solid var(--border);border-radius:14px;padding:.6rem .9rem;font-family:'Poppins',sans-serif;font-size:.86rem;color:var(--text);background:#f8fafc;outline:none;resize:none;max-height:110px;transition:border-color .2s,box-shadow .2s;line-height:1.5;}
+#userInput::placeholder{color:var(--muted);}
+#userInput:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(82,168,35,.12);background:#fff;}
+.send-btn{background:linear-gradient(135deg,var(--green),var(--green2));border:none;border-radius:13px;width:43px;height:43px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(82,168,35,.35);transition:transform .15s;}
+.send-btn:hover{transform:translateY(-1px);}
+.send-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.send-btn svg{width:18px;height:18px;fill:#fff;}
+
+/* PROFILE TAB */
+.profile-hero{background:linear-gradient(135deg,var(--navy),#254e7a);border-radius:14px;padding:1.1rem 1rem;text-align:center;margin-bottom:.75rem;}
+.profile-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.35rem;display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;}
+.profile-name{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:1.1rem;}
+.profile-mobile{color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.1rem;}
+.status-badge{display:inline-flex;align-items:center;gap:.28rem;border-radius:99px;padding:.22rem .65rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;margin-top:.45rem;}
+.sb-complete{background:rgba(82,168,35,.2);color:#a8e063;border:1px solid rgba(82,168,35,.3);}
+.sb-pending{background:rgba(245,166,35,.2);color:var(--gold);border:1px solid rgba(245,166,35,.3);}
+.info-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(27,58,92,.07);border:1.5px solid var(--border);overflow:hidden;margin-bottom:.75rem;}
+.info-row{display:flex;align-items:center;gap:.6rem;padding:.72rem 1rem;border-bottom:1px solid #f1f5f9;font-size:.8rem;}
+.info-row:last-child{border-bottom:none;}
+.info-icon{font-size:.95rem;flex-shrink:0;width:20px;text-align:center;}
+.info-key{color:var(--muted);font-size:.7rem;margin-bottom:.05rem;}
+.info-val{font-weight:600;color:var(--navy);}
+.logout-btn{width:100%;background:#fff;border:2px solid #fca5a5;border-radius:11px;padding:.78rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;color:var(--red);cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.4rem;}
+.logout-btn:hover{background:#fff5f5;}
+
+/* Incomplete banner */
+.incomplete-banner{background:linear-gradient(90deg,#fffbeb,#fef3c7);border:1.5px solid #fcd34d;border-radius:11px;padding:.65rem .9rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;font-size:.76rem;color:#78350f;}
+.ib-resume-btn{margin-left:auto;background:var(--gold);border:none;border-radius:8px;padding:.3rem .65rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;color:var(--navy);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* Toast */
+.toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:.48rem 1.1rem;border-radius:99px;font-size:.74rem;font-weight:600;z-index:600;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ════ SCREEN 1 — Register / Login ════ -->
+<div class="screen active" id="screen-auth">
+  <div class="top-nav">
+    <div class="nav-inner">
+      <img src="cbdlogo.png" alt="College Buddy" class="nav-logo"
+           onerror="this.outerHTML='<span style=\'font-family:Nunito,sans-serif;font-weight:900;font-size:1rem;color:#1b3a5c\'>College<span style=\'color:#52a823\'>Buddy</span></span>'"/>
+      <div class="nav-title">Project in 40 Days<small>Learn Skills &amp; Make Resume</small></div>
+      <button class="nav-info-btn" onclick="toggleIB()">ℹ️</button>
+    </div>
+  </div>
+
+  <div class="ib-popup" id="ibPopup">
+    <div class="ib-card">
+      <div class="ib-head">
+        <span style="font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:.87rem;">🎯 Internship ke baare mein</span>
+        <button class="ib-close" onclick="toggleIB()">✕</button>
+      </div>
+      <div class="ib-body">
+        <div class="ib-step"><div class="ib-num">1</div><div>40 Days mein ek <strong>real project</strong> banao</div></div>
+        <div class="ib-step"><div class="ib-num">2</div><div>Resume ready karo — skills + project add karo</div></div>
+        <div class="ib-step"><div class="ib-num">3</div><div>Communication &amp; interview preparation</div></div>
+        <div class="ib-step"><div class="ib-num">4</div><div>Internship ya job ke liye apply karo 🚀</div></div>
+        <a class="ib-wa" href="https://wa.me/919801907094" target="_blank">💬 WhatsApp: 980 190 7094</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-band">
+    <div class="hero-chip">🚀 40 Days · 6th Sem Students</div>
+    <h1>Complete <em>Project</em> in 40 Days<br/>Learn Skills &amp; Make Resume</h1>
+    <p class="hero-sub">Harshit Bhaiya ke saath seekho, grow karo!</p>
+    <div class="hero-pills">
+      <div class="h-pill hp-red">🔥 26 Seats Only</div>
+      <div class="h-pill hp-gold">📅 Starting 15 April</div>
+    </div>
+  </div>
+
+  <div class="form-wrap">
+    <div class="ref-bar" id="refBar">👋 Aapko <strong id="refName"></strong> ne refer kiya hai!</div>
+    <div class="card">
+      <div class="cs">
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tabRegister" onclick="setMode('register')">✨ Register</button>
+          <button class="mode-tab" id="tabLogin" onclick="setMode('login')">🔑 Login</button>
+        </div>
+
+        <div class="sec-lbl" id="authTitle">📋 Basic Details <span>Step 1 / 4</span></div>
+
+        <!-- Name (register only) -->
+        <div class="field" id="nameField">
+          <label class="lbl">Full Name <span class="req">*</span></label>
+          <input type="text" id="f-name" class="fi" placeholder="Apna pura naam likhein" autocomplete="name"/>
+          <p class="et" id="e-name">Naam required hai.</p>
+        </div>
+
+        <!-- Mobile -->
+        <div class="field">
+          <label class="lbl">Mobile Number <span class="req">*</span></label>
+          <input type="tel" id="f-mobile" class="fi" placeholder="10-digit number" maxlength="10" inputmode="numeric"/>
+          <p class="et" id="e-mobile">Valid 10-digit number enter karein.</p>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label class="lbl" id="passLabel">Password Banaao <span class="req">*</span></label>
+          <input type="password" id="f-pass" class="fi" placeholder="Apna password set karein"/>
+          <p class="et" id="e-pass">Password required hai.</p>
+        </div>
+
+        <!-- Confirm Password (register only) -->
+        <div class="field" id="confirmPassField">
+          <label class="lbl">Confirm Password <span class="req">*</span></label>
+          <input type="password" id="f-confirm-pass" class="fi" placeholder="Password dobara likhein"/>
+          <p class="et" id="e-confirm-pass">Passwords match nahi karte.</p>
+        </div>
+
+        <button class="btn" id="authBtn" onclick="handleAuth()">
+          <div class="spin" id="authSpin"></div>
+          <span id="authBtnTxt">Register &amp; Continue →</span>
+        </button>
+      </div>
+    </div>
+    <p class="foot">© 2025 College Buddy · Data saved securely</p>
+  </div>
+</div>
+
+<!-- ════ SCREEN 2 ════ -->
+<div class="screen" id="screen-s2">
+  <div class="top-nav">
+    <div class="nav-inner">
+      <img src="cbdlogo.png" alt="College Buddy" class="nav-logo" onerror="this.style.display='none'"/>
+      <div class="nav-title">Registration <small>Step 2 of 4</small></div>
+    </div>
+  </div>
+  <div class="hero-band" style="padding:1rem 1rem 1.3rem;">
+    <div class="step-bar">
+      <div class="sc done">✓</div><div class="sl done"></div>
+      <div class="sc active">2</div><div class="sl"></div>
+      <div class="sc">3</div><div class="sl"></div>
+      <div class="sc">4</div>
+    </div>
+    <div class="prog-bar" style="margin-top:.6rem;"><div class="prog-fill" style="width:25%"></div></div>
+    <p class="prog-txt">25% complete</p>
+  </div>
+  <div class="form-wrap">
+    <div class="card"><div class="cs">
+      <div class="sec-lbl">📬 Contact &amp; College <span>Step 2 / 4</span></div>
+      <div class="field">
+        <label class="lbl">Email Address <span class="req">*</span></label>
+        <input type="email" id="f-email" class="fi" placeholder="example@gmail.com" inputmode="email"/>
+        <p class="et" id="e-email">Valid email enter karein.</p>
+      </div>
+      <div class="field">
+        <label class="lbl">College <span class="req">*</span></label>
+        <select id="f-college" class="fi"><option value="">-- Apna College Select Karein --</option></select>
+        <p class="et" id="e-college">College select karein.</p>
+      </div>
+      <div class="field" style="margin-bottom:1.3rem;">
+        <label class="lbl">Laptop / Computer Hai? <span class="req">*</span></label>
+        <div class="rg">
+          <label class="rp"><input type="radio" name="laptop" value="Haan"/> 💻 Haan</label>
+          <label class="rp"><input type="radio" name="laptop" value="Nahi"/> 📱 Nahi, Bas Phone</label>
+        </div>
+        <p class="et" id="e-laptop">Ek option select karein.</p>
+      </div>
+      <button class="btn" id="s2Btn" onclick="submitS2()">
+        <div class="spin" id="s2spin"></div><span id="s2txt">Next →</span>
+      </button>
+    </div></div>
+    <p class="foot">© 2025 College Buddy</p>
+  </div>
+</div>
+
+<!-- ════ SCREEN 3 ════ -->
+<div class="screen" id="screen-s3">
+  <div class="top-nav">
+    <div class="nav-inner">
+      <img src="cbdlogo.png" alt="College Buddy" class="nav-logo" onerror="this.style.display='none'"/>
+      <div class="nav-title">Registration <small>Step 3 of 4</small></div>
+    </div>
+  </div>
+  <div class="hero-band" style="padding:1rem 1rem 1.3rem;">
+    <div class="step-bar">
+      <div class="sc done">✓</div><div class="sl done"></div>
+      <div class="sc done">✓</div><div class="sl done"></div>
+      <div class="sc active">3</div><div class="sl"></div>
+      <div class="sc">4</div>
+    </div>
+    <div class="prog-bar" style="margin-top:.6rem;"><div class="prog-fill" style="width:50%"></div></div>
+    <p class="prog-txt">50% complete</p>
+  </div>
+  <div class="form-wrap">
+    <div class="card"><div class="cs">
+      <div class="sec-lbl">💻 Skills &amp; Project <span>Step 3 / 4</span></div>
+      <div class="qcard" id="qc1">
+        <div class="qcard-q">📁 Koi Project Banaya Hai Pehle?</div>
+        <div class="qcard-opts">
+          <label class="qopt"><input type="radio" name="proj_exp" value="Nahi"/> ❌ Nahi</label>
+          <label class="qopt"><input type="radio" name="proj_exp" value="haan_type"/> ✅ Haan — kaunsa?</label>
+        </div>
+        <p class="et" id="e-proj">Select karein.</p>
+        <div class="proj-more" id="projMore">
+          <input type="text" id="f-proj-detail" class="fi" placeholder="Project ka naam / description..." style="margin-top:.45rem;"/>
+        </div>
+      </div>
+      <div class="qcard" id="qc2">
+        <div class="qcard-q">🐙 GitHub Account Hai?</div>
+        <div class="qcard-opts">
+          <label class="qopt"><input type="radio" name="github" value="Haan"/> ✅ Haan</label>
+          <label class="qopt"><input type="radio" name="github" value="Nahi"/> ❌ Nahi</label>
+        </div>
+        <p class="et" id="e-github">Select karein.</p>
+      </div>
+      <div class="qcard" id="qc3">
+        <div class="qcard-q">💼 LinkedIn Profile Hai?</div>
+        <div class="qcard-opts">
+          <label class="qopt"><input type="radio" name="linkedin" value="Haan"/> ✅ Haan</label>
+          <label class="qopt"><input type="radio" name="linkedin" value="Nahi"/> ❌ Nahi</label>
+        </div>
+        <p class="et" id="e-linkedin">Select karein.</p>
+      </div>
+      <div class="qcard" id="qc4">
+        <div class="qcard-q">🎓 MCA Karne Wale Hain?</div>
+        <div class="qcard-opts">
+          <label class="qopt"><input type="radio" name="mca" value="Haan"/> 🎓 Haan</label>
+          <label class="qopt"><input type="radio" name="mca" value="Nahi"/> ❌ Nahi</label>
+        </div>
+        <p class="et" id="e-mca">Select karein.</p>
+      </div>
+      <hr class="dv"/>
+      <div class="field" style="margin-bottom:1.3rem;">
+        <label class="lbl">Kaisa Project Banana Chahenge? <span class="req">*</span></label>
+        <div class="pt-grid">
+          <label class="pt-card"><input type="radio" name="proj_type" value="Full Stack Project"/><div><div class="pt-card-t">🌐 Full Stack Project</div><div class="pt-card-s">HTML, CSS, JS, Node/PHP + Database</div></div></label>
+          <label class="pt-card"><input type="radio" name="proj_type" value="Python & AI Project"/><div><div class="pt-card-t">🤖 Python &amp; AI Project</div><div class="pt-card-s">Machine Learning, Data, Automation</div></div></label>
+          <label class="pt-card"><input type="radio" name="proj_type" value="Java Project"/><div><div class="pt-card-t">☕ Java Project</div><div class="pt-card-s">Core Java / Spring / Android</div></div></label>
+        </div>
+        <p class="et" id="e-proj-type">Project type select karein.</p>
+      </div>
+      <button class="btn" onclick="submitS3()">Next →</button>
+    </div></div>
+    <p class="foot">© 2025 College Buddy</p>
+  </div>
+</div>
+
+<!-- ════ SCREEN 4 ════ -->
+<div class="screen" id="screen-s4">
+  <div class="top-nav">
+    <div class="nav-inner">
+      <img src="cbdlogo.png" alt="College Buddy" class="nav-logo" onerror="this.style.display='none'"/>
+      <div class="nav-title">Registration <small>Step 4 of 4</small></div>
+    </div>
+  </div>
+  <div class="hero-band" style="padding:1rem 1rem 1.3rem;">
+    <div class="step-bar">
+      <div class="sc done">✓</div><div class="sl done"></div>
+      <div class="sc done">✓</div><div class="sl done"></div>
+      <div class="sc done">✓</div><div class="sl done"></div>
+      <div class="sc active">4</div>
+    </div>
+    <div class="prog-bar" style="margin-top:.6rem;"><div class="prog-fill" style="width:75%"></div></div>
+    <p class="prog-txt">75% complete — almost there!</p>
+  </div>
+  <div class="form-wrap">
+    <div class="card"><div class="cs">
+      <div class="sec-lbl">✍️ Apne Baare Mein <span>Step 4 / 4</span></div>
+      <div class="intro-box">💡 <strong>Thoda sochke likhna:</strong> Yeh ek paid course hai, lekin kuch logo ki help <strong>FREE</strong> me ki jayegi.</div>
+      <div class="field">
+        <label class="lbl">Apna Introduction Likho <span class="req">*</span></label>
+        <textarea id="f-intro" class="fi" rows="5" placeholder="Apne baare me achhe se batao..." style="resize:none;"></textarea>
+        <p class="et" id="e-intro">Introduction required hai (min 30 characters).</p>
+        <p id="intro-count" style="font-size:.67rem;color:#94a3b8;margin-top:.18rem;">0 characters</p>
+      </div>
+      <div class="field" style="margin-bottom:1.3rem;">
+        <label class="lbl">Feedback / Suggestion <span class="req">*</span></label>
+        <textarea id="f-feedback" class="fi" rows="3" placeholder="Koi sawaal, expectation ya suggestion..." style="resize:none;"></textarea>
+        <p class="et" id="e-feedback">Feedback required hai.</p>
+      </div>
+      <button class="btn" id="s4Btn" onclick="submitS4()">
+        <div class="spin" id="s4spin"></div><span id="s4txt">Submit &amp; Go to Dashboard 🚀</span>
+      </button>
+    </div></div>
+    <p class="foot">© 2025 College Buddy</p>
+  </div>
+</div>
+
+<!-- ════ DASHBOARD ════ -->
+<div class="screen" id="screen-dash">
+  <div class="dash-header">
+    <div class="dash-top">
+      <img src="cbdlogo.png" alt="College Buddy" class="dash-logo"
+           onerror="this.outerHTML='<span style=\'font-family:Nunito,sans-serif;font-weight:900;font-size:.9rem;color:#fff\'>CB</span>'"/>
+      <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;background:rgba(82,168,35,.25);color:#a8e063;border:1px solid rgba(82,168,35,.3);border-radius:99px;padding:.18rem .6rem;">🎓 6th Sem</div>
+    </div>
+    <div class="dash-greeting">
+      <p>Welcome back 👋</p>
+      <h2>Hello, <span id="dash-name">—</span>!</h2>
+    </div>
+  </div>
+
+  <!-- Incomplete banner -->
+  <div style="max-width:520px;margin:.9rem auto 0;padding:0 1rem;width:100%;">
+    <div class="incomplete-banner" id="incompleteBanner" style="display:none;">
+      ⚠️ <span id="incompleteTxt">Registration incomplete!</span>
+      <button class="ib-resume-btn" onclick="resumeForm()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── HOME TAB ── -->
+  <div class="tab-content active" id="tab-home">
+
+    <!-- Referral link card (link visible, not the code) -->
+    <div class="ref-link-card">
+      <div class="rlc-label">🔗 Aapka Referral Link</div>
+      <div class="rlc-link-row">
+        <div class="rlc-link" id="dash-reflink">—</div>
+        <button class="copy-link-btn" id="copyLinkBtn" onclick="copyRefLink()">
+          📋 Copy Link
+        </button>
+      </div>
+    </div>
+
+    <!-- Action cards ABOVE referral list -->
+    <div class="action-row">
+      <div class="ac ac-g">
+        <div class="ac-icon">👥</div>
+        <div class="ac-title">Group Join Karo</div>
+        <div class="ac-sub">WhatsApp group mein saath seekhenge</div>
+        <a class="ac-btn ac-btn-green" href="https://chat.whatsapp.com/KY8ALp4BSryEnkT29Moi4j" target="_blank">Join Group</a>
+      </div>
+      <div class="ac ac-b">
+        <div class="ac-icon">📲</div>
+        <div class="ac-title">Dost Bulao</div>
+        <div class="ac-sub">Share karo aur saath seekho!</div>
+        <button class="ac-btn ac-btn-blue" onclick="shareWA()">Share Now</button>
+      </div>
+    </div>
+
+    <!-- Referral stats -->
+    <div class="ref-stat-card">
+      <div class="rsc-head">
+        <div class="rsc-title">👥 Dost Join Kiye</div>
+        <div class="rsc-count" id="ref-count-badge">0</div>
+      </div>
+      <div class="ref-list" id="ref-list">
+        <div class="ref-empty">⏳ Abhi tak koi nahi aaya.<br/>Apne dosto ko share karo!</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── CLASSES TAB ── -->
+  <div class="tab-content" id="tab-classes">
+    <div id="classes-content">
+      <div class="no-class"><div class="nc-icon">⏳</div><p>Classes load ho rahi hain...</p></div>
+    </div>
+    <div class="roadmap-card">
+      <div class="rm-title">🗺️ 40-Day Roadmap</div>
+      <div class="rm-step"><div class="rm-dot">1</div><div class="rm-txt"><strong>Kuch Basics Padhenge</strong>Foundation strong karenge<span class="rm-days">⏱ 4 Days</span></div></div>
+      <div class="rm-step"><div class="rm-dot">2</div><div class="rm-txt"><strong>Real Project Banayenge</strong>Hands-on learning<span class="rm-days">⏱ 16 Days</span></div></div>
+      <div class="rm-step"><div class="rm-dot">3</div><div class="rm-txt"><strong>Usko Live Karenge</strong>Problems fix karenge<span class="rm-days">⏱ 5 Days</span></div></div>
+      <div class="rm-step"><div class="rm-dot">4</div><div class="rm-txt"><strong>Resume Banayenge</strong>Skills &amp; Project add<span class="rm-days">⏱ 2 Days</span></div></div>
+      <div class="rm-step"><div class="rm-dot">5</div><div class="rm-txt"><strong>Communication &amp; Interview</strong>English + taiyaari<span class="rm-days">⏱ 13 Days</span></div></div>
+    </div>
+  </div>
+
+  <!-- ── BUDDY TAB (Chat) ── -->
+  <div class="tab-content" id="tab-buddy">
+    <div class="buddy-nav">
+      <div class="buddy-nav-inner">
+        <img src="cbdlogo.png" alt="CB" class="buddy-logo" onerror="this.style.display='none'"/>
+        <div>
+          <div class="buddy-nav-name">My Buddy 🤖</div>
+          <div class="buddy-nav-status"><span class="bstatus-dot"></span>Online · always here</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="chatBox"></div>
+
+    <div id="sugWrap">
+      <div class="suggestions">
+        <div class="sug-chip" onclick="useSug('DSA kya hota hai?')">📚 DSA kya hai?</div>
+        <div class="sug-chip" onclick="useSug('Mujhe study tips do')">💡 Study tips</div>
+        <div class="sug-chip" onclick="useSug('Array aur Linked List mein difference?')">🧠 Array vs List</div>
+        <div class="sug-chip" onclick="useSug('Exam ki preparation kaise karein?')">🎯 Exam prep</div>
+        <div class="sug-chip" onclick="useSug('Operating System kya hai?')">💻 OS kya hai?</div>
+        <div class="sug-chip" onclick="useSug('Mujhe motivate karo!')">🔥 Motivate karo</div>
+      </div>
+    </div>
+
+    <div class="chat-input-bar">
+      <div class="chat-input-inner">
+        <textarea id="userInput" rows="1" placeholder="Kuch bhi pucho — Hindi, English, Hinglish..."></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROFILE TAB ── -->
+  <div class="tab-content" id="tab-profile">
+    <div class="profile-hero">
+      <div class="profile-avatar" id="prof-avatar">—</div>
+      <div class="profile-name" id="prof-name">—</div>
+      <div class="profile-mobile" id="prof-mobile">—</div>
+      <div class="status-badge sb-complete" id="prof-status">✅ Complete</div>
+    </div>
+    <div class="info-card">
+      <div class="info-row"><span class="info-icon">📧</span><div><div class="info-key">Email</div><div class="info-val" id="prof-email">—</div></div></div>
+      <div class="info-row"><span class="info-icon">🏫</span><div><div class="info-key">College</div><div class="info-val" id="prof-college">—</div></div></div>
+      <div class="info-row"><span class="info-icon">💻</span><div><div class="info-key">Laptop</div><div class="info-val" id="prof-laptop">—</div></div></div>
+      <div class="info-row"><span class="info-icon">🌐</span><div><div class="info-key">Project Type</div><div class="info-val" id="prof-projtype">—</div></div></div>
+    </div>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    <p class="foot" style="margin-top:.5rem;">© 2025 College Buddy</p>
+  </div>
+
+  <!-- BOTTOM NAV — 4 tabs -->
+  <div class="bottom-nav">
+    <div class="bn-inner">
+      <button class="bn-tab active" id="bn-home" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </button>
+      <button class="bn-tab" id="bn-classes" onclick="switchTab('classes')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Classes
+      </button>
+      <button class="bn-tab" id="bn-buddy" onclick="switchTab('buddy')">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Buddy
+      </button>
+      <button class="bn-tab" id="bn-profile" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUPS -->
+<div class="overlay" id="dupOverlay">
+  <div class="pop-card">
+    <div class="pop-icon">👋</div>
+    <h3>Pehle Se Registered Hain!</h3>
+    <p>Yeh mobile number already registered hai. Login karein.</p>
+    <button class="pop-btn" onclick="closeDupAndLogin()">Login Karo →</button>
+    <button class="pop-btn-ghost" onclick="closeOverlay('dupOverlay')">Cancel</button>
+  </div>
+</div>
+<div class="overlay" id="errOverlay">
+  <div class="pop-card">
+    <div class="pop-icon">❌</div>
+    <h3 id="errTitle">Kuch galat hua</h3>
+    <p id="errMsg">Please try again.</p>
+    <button class="pop-btn" onclick="closeOverlay('errOverlay')">Theek Hai</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+// const SHEET_URL  = 'https://script.google.com/macros/s/AKfycbypS8Gd02QeipQiJ99JT5DViD9G752QlvneBtHTbNFWMiMuTSgonowGFitSuTMLXRw/exec';
+const SHEET_URL  = 'https://script.google.com/macros/s/AKfycbxngJ_tlMXGJKf3GUkkUAFamHGvk7aplKQdzGpqZoX0LcQPTiUzDgdWC4oDWc4tKVb-BQ/exec';
+const PAGE_URL   = 'https://collegebuddy7.github.io/projects/';
+
+// ── AI BUDDY CONFIG ──
+const BUDDY_URL  = 'https://script.google.com/macros/s/AKfycbypS8Gd02QeipQiJ99JT5DViD9G752QlvneBtHTbNFWMiMuTSgonowGFitSuTMLXRw/exec';
+// ^ Same GAS URL — buddy actions merged into same script
+
+const SYSTEM_PROMPT = `You are "My Buddy", a friendly AI study companion for college students in Bihar, India.
+
+CRITICAL LANGUAGE RULE:
+- If Hindi (Devanagari or Roman Hindi) → reply ONLY in Hindi/Hinglish
+- If English → reply ONLY in English
+- If Hinglish → reply ONLY in Hinglish
+- NEVER write the same thing in two languages
+
+Personality: Warm, encouraging, like a smart senior/dost. Expert in DSA, Programming, OS, DBMS, Networks, Math. Use emojis naturally.`;
+
+// ══════════════════════════════════════════════
+// COLLEGES
+// ══════════════════════════════════════════════
+const COLLEGES = [
+  "A.B.S. College, Lalganj","B.M.D. College, Dayalpur","CN College, Sahebganj",
+  "Dr. R.M.L.S. College, Muzaffarpur","Indu Devi Ranjeet Kumar Prakash",
+  "J.L. College, Hajipur","J.L.N.M. College, Ghorasahan","K.C.T.C. College, Raxaul",
+  "L.N.T. College, Muzaffarpur","L.N. College, Bhagwanpur","L.N.D. College, Motihari",
+  "L.S. College, Muzaffarpur","M.S.M. Samata College, Jandah","M.S.S.G. College, Areraj",
+  "M.D.D.M. College, Muzaffarpur","M.J.K. College, Bettiah","M.P.S. Sc. College, Muzaffarpur",
+  "M.S. College, Motihari","Nitishwar College, Muzaffarpur","Ranjeet Kumar Prakash",
+  "R.D.S. College, Muzaffarpur","R.L.S.Y. College, Bettiah","R.N. College, Hajipur",
+  "R.S.S.M. College, Sitamarhi","R.S.S. Sc. College, Sitamarhi",
+  "Rameshwar Mahavidyalaya, Muzaffarpur","S.R.A.P. College, Barachakia",
+  "S.L.K. College, Sitamarhi","S.N.S. College, Motihari","S.R.K.G. College, Sitamarhi",
+  "Umesh Kumar Ranjeet Vidayalya",
+  "Vaishali Institute of Business and Rural Management, Muzaffarpur","Other"
+];
+(function(){
+  const sel = document.getElementById('f-college');
+  COLLEGES.forEach((c,i)=>{
+    const o = document.createElement('option');
+    o.value = c; o.textContent = (i+1)+'. '+c;
+    sel.appendChild(o);
+  });
+})();
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let currentUser = null;
+let authMode = 'register';
+let _waMsg = '';
+let isBotTyping = false;
+let sugShown = false;
+let conversationHistory = [];
+
+// ══════════════════════════════════════════════
+// LOCAL STORAGE
+// ══════════════════════════════════════════════
+function saveLocal(u){ localStorage.setItem('cb_user', JSON.stringify(u)); }
+function loadLocal(){ try{ return JSON.parse(localStorage.getItem('cb_user')); }catch(_){ return null; } }
+function clearLocal(){ localStorage.removeItem('cb_user'); localStorage.removeItem('cb_chat'); }
+function saveChatHistory(){ try{ localStorage.setItem('cb_chat', JSON.stringify(conversationHistory)); }catch(_){} }
+function loadChatHistory(){ try{ const h=localStorage.getItem('cb_chat'); conversationHistory=h?JSON.parse(h):[]; }catch(_){ conversationHistory=[]; } }
+
+// ══════════════════════════════════════════════
+// JSONP
+// ══════════════════════════════════════════════
+function jsonpFetch(url){
+  return new Promise((resolve,reject)=>{
+    const cb='_cb_'+Math.random().toString(36).slice(2);
+    const s=document.createElement('script');
+    const t=setTimeout(()=>{ cleanup(); reject(new Error('timeout')); },12000);
+    function cleanup(){ delete window[cb]; s.remove(); clearTimeout(t); }
+    window[cb]=function(d){ cleanup(); resolve(d); };
+    s.src=url+'&callback='+cb;
+    s.onerror=()=>{ cleanup(); reject(new Error('network')); };
+    document.head.appendChild(s);
+  });
+}
+
+async function postData(payload){
+  return new Promise((resolve)=>{
+    try{
+      const cb='_post_'+Math.random().toString(36).slice(2);
+      const s=document.createElement('script');
+      const t=setTimeout(()=>{ cleanup(); resolve(); },8000);
+      function cleanup(){ delete window[cb]; s.remove(); clearTimeout(t); }
+      window[cb]=function(){ cleanup(); resolve(); };
+      // Send each field as own param (no JSON nesting — avoids encoding issues)
+      const params=new URLSearchParams({ callback: cb });
+      for(const [k,v] of Object.entries(payload)) params.append(k, v??'');
+      s.src=SHEET_URL+'?'+params.toString();
+      s.onerror=()=>{ cleanup(); resolve(); };
+      document.head.appendChild(s);
+    }catch(_){ resolve(); }
+  });
+}
+
+// ══════════════════════════════════════════════
+// SCREEN ROUTING
+// ══════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // Referral from URL
+  const ref=new URLSearchParams(window.location.search).get('ref');
+  if(ref){
+    document.getElementById('refName').textContent=decodeURIComponent(ref);
+    document.getElementById('refBar').style.display='flex';
+  }
+
+  // Auto-login
+  const saved=loadLocal();
+  if(saved && saved.mobile && saved.password){
+    currentUser=saved;
+    routeByStatus(saved.status||1);
+  }
+
+  // Textarea auto-resize
+  const ta=document.getElementById('userInput');
+  ta.addEventListener('input',()=>{ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,110)+'px'; });
+  ta.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } });
+
+  // Radio highlights
+  document.addEventListener('change',onRadioChange);
+
+  // Intro counter
+  document.getElementById('f-intro').addEventListener('input',function(){
+    document.getElementById('intro-count').textContent=this.value.length+' characters';
+  });
+});
+
+function routeByStatus(status){
+  status=parseInt(status)||1;
+  if(status>=5) showDashboard();
+  else if(status===4) showScreen('screen-s4');
+  else if(status===3) showScreen('screen-s3');
+  else if(status===2) showScreen('screen-s2');
+  else showScreen('screen-auth');
+}
+
+function resumeForm(){
+  const s=parseInt(currentUser?.status)||1;
+  if(s===2) showScreen('screen-s2');
+  else if(s===3) showScreen('screen-s3');
+  else if(s===4) showScreen('screen-s4');
+  else showDashboard();
+}
+
+// ══════════════════════════════════════════════
+// AUTH MODE TOGGLE
+// ══════════════════════════════════════════════
+function setMode(m){
+  authMode=m;
+  document.getElementById('tabRegister').classList.toggle('active',m==='register');
+  document.getElementById('tabLogin').classList.toggle('active',m==='login');
+  document.getElementById('nameField').style.display=m==='register'?'block':'none';
+  document.getElementById('confirmPassField').style.display=m==='register'?'block':'none';
+  document.getElementById('passLabel').textContent=m==='register'?'Password Banaao *':'Apna Password *';
+  document.getElementById('authBtnTxt').textContent=m==='register'?'Register & Continue →':'Login →';
+  document.getElementById('authTitle').innerHTML=m==='register'?'📋 Basic Details <span>Step 1 / 4</span>':'🔑 Login';
+}
+
+// ══════════════════════════════════════════════
+// INTERNSHIP BANNER
+// ══════════════════════════════════════════════
+function toggleIB(){
+  const b=document.getElementById('ibPopup');
+  b.style.display=b.style.display==='block'?'none':'block';
+}
+document.addEventListener('click',function(e){
+  const b=document.getElementById('ibPopup');
+  if(b&&b.style.display==='block'&&!b.contains(e.target)&&!e.target.closest('.nav-info-btn')) b.style.display='none';
+});
+
+// ══════════════════════════════════════════════
+// VALIDATION HELPERS
+// ══════════════════════════════════════════════
+function showErr(id,show){ const el=document.getElementById(id); if(el) el.style.display=show?'block':'none'; }
+function flagFi(id,err){ const el=document.getElementById(id); if(el){ err?el.classList.add('err'):el.classList.remove('err'); } }
+function genRefCode(name,mobile){ return name.trim().split(/\s+/)[0].toUpperCase().replace(/[^A-Z]/g,'')+mobile.trim().slice(-4); }
+
+function onRadioChange(e){
+  if(e.target.type!=='radio') return;
+  const name=e.target.name;
+  document.querySelectorAll(`input[name="${name}"]`).forEach(i=>i.closest('.rp,.qopt,.pt-card')?.classList.remove('sel'));
+  e.target.closest('.rp,.qopt,.pt-card')?.classList.add('sel');
+  const qcMap={proj_exp:'qc1',github:'qc2',linkedin:'qc3',mca:'qc4'};
+  if(qcMap[name]) document.getElementById(qcMap[name]).classList.add('answered');
+  if(name==='proj_exp') document.getElementById('projMore').classList.toggle('show',e.target.value==='haan_type');
+}
+
+function showOverlay(id){ document.getElementById(id).classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+function showError(title,msg){ document.getElementById('errTitle').textContent=title; document.getElementById('errMsg').textContent=msg; showOverlay('errOverlay'); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+// ══════════════════════════════════════════════
+// SCREEN 1 — AUTH (Password-based, no PIN)
+// ══════════════════════════════════════════════
+async function handleAuth(){
+  let ok=true;
+
+  const mobile=document.getElementById('f-mobile').value.trim();
+  const mOk=/^\d{10}$/.test(mobile);
+  flagFi('f-mobile',!mOk); showErr('e-mobile',!mOk); if(!mOk) ok=false;
+
+  const pass=document.getElementById('f-pass').value.trim();
+  flagFi('f-pass',!pass); showErr('e-pass',!pass); if(!pass) ok=false;
+
+  let name='';
+  if(authMode==='register'){
+    name=document.getElementById('f-name').value.trim();
+    flagFi('f-name',!name); showErr('e-name',!name); if(!name) ok=false;
+
+    const confirm=document.getElementById('f-confirm-pass').value.trim();
+    const confOk=pass===confirm&&pass!=='';
+    flagFi('f-confirm-pass',!confOk); showErr('e-confirm-pass',!confOk);
+    if(!confOk) ok=false;
+  }
+
+  if(!ok) return;
+
+  const btn=document.getElementById('authBtn');
+  document.getElementById('authSpin').style.display='block';
+  document.getElementById('authBtnTxt').style.display='none';
+  btn.disabled=true;
+  const reset=()=>{ document.getElementById('authSpin').style.display='none'; document.getElementById('authBtnTxt').style.display='inline'; btn.disabled=false; };
+
+  // Check if mobile exists
+  let existing=null;
+  try{
+    const res=await jsonpFetch(SHEET_URL+'?action=getUser&mobile='+encodeURIComponent(mobile));
+    if(res&&res.found) existing=res;
+  }catch(_){}
+
+  if(authMode==='register'){
+    if(existing&&existing.found){ reset(); showOverlay('dupOverlay'); return; }
+
+    const refCode=genRefCode(name,mobile);
+    const referredBy=decodeURIComponent(new URLSearchParams(window.location.search).get('ref')||'');
+    currentUser={ name, mobile, password:pass, refCode, referredBy, status:1 };
+    saveLocal(currentUser);
+    await postData({ action:'register', name, mobile, password:pass, refCode, referredBy,
+      timestamp:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}) });
+    reset();
+    showScreen('screen-s2');
+
+  } else {
+    // LOGIN
+    if(!existing||!existing.found){ reset(); showError('Not Found','Yeh mobile number registered nahi hai.'); return; }
+    if(existing.password!==pass){ reset(); flagFi('f-pass',true); showErr('e-pass',true); document.getElementById('e-pass').textContent='Galat password hai.'; return; }
+
+    currentUser={
+      name:existing.name, mobile:existing.mobile, password:existing.password,
+      refCode:existing.refCode, email:existing.email, college:existing.college,
+      laptop:existing.laptop, status:existing.status, projType:existing.projType, referredBy:existing.referredBy
+    };
+    saveLocal(currentUser);
+    reset();
+    routeByStatus(existing.status);
+  }
+}
+
+function closeDupAndLogin(){ closeOverlay('dupOverlay'); setMode('login'); }
+
+// ══════════════════════════════════════════════
+// SCREEN 2
+// ══════════════════════════════════════════════
+async function submitS2(){
+  let ok=true;
+  const email=document.getElementById('f-email').value.trim();
+  const eOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  flagFi('f-email',!eOk); showErr('e-email',!eOk); if(!eOk) ok=false;
+  const college=document.getElementById('f-college').value;
+  flagFi('f-college',!college); showErr('e-college',!college); if(!college) ok=false;
+  const laptop=document.querySelector('input[name="laptop"]:checked');
+  showErr('e-laptop',!laptop); if(!laptop) ok=false;
+  if(!ok) return;
+
+  setBtnLoad('s2Btn','s2spin','s2txt',true);
+  currentUser={...currentUser,email,college,laptop:laptop.value,status:2};
+  saveLocal(currentUser);
+  await postData({ action:'updateS2', mobile:currentUser.mobile, email, college, laptop:laptop.value, status:2 });
+  setBtnLoad('s2Btn','s2spin','s2txt',false,'Next →');
+  showScreen('screen-s3');
+}
+
+// ══════════════════════════════════════════════
+// SCREEN 3
+// ══════════════════════════════════════════════
+function submitS3(){
+  let ok=true;
+  const proj=document.querySelector('input[name="proj_exp"]:checked');
+  showErr('e-proj',!proj); if(!proj) ok=false;
+  const github=document.querySelector('input[name="github"]:checked');
+  showErr('e-github',!github); if(!github) ok=false;
+  const linkedin=document.querySelector('input[name="linkedin"]:checked');
+  showErr('e-linkedin',!linkedin); if(!linkedin) ok=false;
+  const mca=document.querySelector('input[name="mca"]:checked');
+  showErr('e-mca',!mca); if(!mca) ok=false;
+  const projType=document.querySelector('input[name="proj_type"]:checked');
+  showErr('e-proj-type',!projType); if(!projType) ok=false;
+  if(!ok){ document.querySelector('.et:not([style*="none"])')?.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  const projVal=proj.value==='haan_type'?(document.getElementById('f-proj-detail').value.trim()||'Haan'):proj.value;
+  currentUser={...currentUser,projExp:projVal,github:github.value,linkedin:linkedin.value,mca:mca.value,projType:projType.value,status:3};
+  saveLocal(currentUser);
+  postData({ action:'updateS3', mobile:currentUser.mobile, projExp:projVal, github:github.value,
+    linkedin:linkedin.value, mca:mca.value, projType:projType.value, status:3 });
+  showScreen('screen-s4');
+}
+
+// ══════════════════════════════════════════════
+// SCREEN 4
+// ══════════════════════════════════════════════
+async function submitS4(){
+  let ok=true;
+  const intro=document.getElementById('f-intro').value.trim();
+  const iOk=intro.length>=30;
+  flagFi('f-intro',!iOk); showErr('e-intro',!iOk); if(!iOk) ok=false;
+  const feedback=document.getElementById('f-feedback').value.trim();
+  flagFi('f-feedback',!feedback); showErr('e-feedback',!feedback); if(!feedback) ok=false;
+  if(!ok) return;
+
+  setBtnLoad('s4Btn','s4spin','s4txt',true);
+  currentUser={...currentUser,introduction:intro,feedback,status:5};
+  saveLocal(currentUser);
+  await postData({ action:'updateS4', mobile:currentUser.mobile, introduction:intro, feedback, status:5 });
+  setBtnLoad('s4Btn','s4spin','s4txt',false,'Submit & Go to Dashboard 🚀');
+  showDashboard();
+}
+
+function setBtnLoad(btnId,spinId,txtId,loading,txt=''){
+  document.getElementById(spinId).style.display=loading?'block':'none';
+  document.getElementById(txtId).style.display=loading?'none':'inline';
+  document.getElementById(btnId).disabled=loading;
+  if(!loading&&txt) document.getElementById(txtId).textContent=txt;
+}
+
+// ══════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════
+function showDashboard(){
+  showScreen('screen-dash');
+  const u=currentUser; if(!u) return;
+
+  document.getElementById('dash-name').textContent=u.name?.split(' ')[0]||'Student';
+
+  // Referral link (not code)
+  const refLink=PAGE_URL+'?ref='+encodeURIComponent(u.refCode||'');
+  document.getElementById('dash-reflink').textContent=refLink;
+
+  // WA message
+  _waMsg=`Yaar! 🎓 Ham apna Project *Harshit Bhaiya* ki help se bana rahe hain!\n\n✅ 40 Days mein Real Project\n📄 Resume + Skills bhi banegi\n🚀 Internship ke liye bilkul ready ho jaoge!\n\nTum bhi Join Kar lo 👇\n\n*Ye raha Link:* ${refLink}\n\nAbhi register karo, seats limited hain! 🔥`;
+
+  // Profile tab
+  const initials=(u.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('prof-avatar').textContent=initials;
+  document.getElementById('prof-name').textContent=u.name||'—';
+  document.getElementById('prof-mobile').textContent=u.mobile||'—';
+  document.getElementById('prof-email').textContent=u.email||'—';
+  document.getElementById('prof-college').textContent=u.college||'—';
+  document.getElementById('prof-laptop').textContent=u.laptop||'—';
+  document.getElementById('prof-projtype').textContent=u.projType||'—';
+
+  const complete=parseInt(u.status)>=5;
+  const sb=document.getElementById('prof-status');
+  sb.textContent=complete?'✅ Registration Complete':'⏳ Registration Pending';
+  sb.className='status-badge '+(complete?'sb-complete':'sb-pending');
+
+  const ib=document.getElementById('incompleteBanner');
+  ib.style.display=complete?'none':'flex';
+
+  loadReferrals(u.refCode);
+  loadClasses();
+  initBuddy();
+}
+
+// ══════════════════════════════════════════════
+// COPY REFERRAL LINK
+// ══════════════════════════════════════════════
+function copyRefLink(){
+  const link=PAGE_URL+'?ref='+encodeURIComponent(currentUser?.refCode||'');
+  navigator.clipboard.writeText(link).then(()=>{
+    const btn=document.getElementById('copyLinkBtn');
+    btn.textContent='✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.innerHTML='📋 Copy Link'; btn.classList.remove('copied'); },2000);
+  });
+}
+
+// ══════════════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════════════
+function shareWA(){
+  window.open('https://wa.me/?text='+encodeURIComponent(_waMsg),'_blank');
+}
+
+// ══════════════════════════════════════════════
+// LOAD REFERRALS
+// ══════════════════════════════════════════════
+async function loadReferrals(refCode){
+  if(!refCode) return;
+  try{
+    const res=await jsonpFetch(SHEET_URL+'?action=getReferrals&refCode='+encodeURIComponent(refCode));
+    const list=res?.referrals||[];
+    document.getElementById('ref-count-badge').textContent=list.length;
+    const el=document.getElementById('ref-list');
+    if(list.length===0){
+      el.innerHTML='<div class="ref-empty">⏳ Abhi tak koi nahi aaya.<br/>Apne dosto ko share karo!</div>';
+    } else {
+      el.innerHTML=list.map(r=>{
+        const ini=(r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+        return `<div class="ref-item"><div class="ref-avatar">${ini}</div><div>${r.name||'—'}<span style="font-size:.68rem;color:var(--muted);display:block;">${r.college||''}</span></div></div>`;
+      }).join('');
+    }
+  }catch(_){}
+}
+
+// ══════════════════════════════════════════════
+// LOAD CLASSES
+// ══════════════════════════════════════════════
+async function loadClasses(){
+  try{
+    const res=await jsonpFetch(SHEET_URL+'?action=getClasses');
+    const classes=res?.classes||[];
+    const el=document.getElementById('classes-content');
+    if(classes.length===0){
+      el.innerHTML='<div class="no-class"><div class="nc-icon">📅</div><p>Abhi koi class schedule nahi hai.</p></div>';
+      return;
+    }
+    el.innerHTML=classes.map(c=>`
+      <div class="class-card">
+        <div class="cc-header"><span style="font-size:1.1rem;">📚</span><div class="cc-header-txt">${c.topic||'Class'}</div></div>
+        <div class="cc-body">
+          ${c.date?`<div class="cc-row"><span>📅</span><div><strong>${c.date}</strong></div></div>`:''}
+          ${c.time?`<div class="cc-row"><span>🕐</span><div>${c.time}</div></div>`:''}
+          ${c.description?`<div class="cc-row"><span>📝</span><div>${c.description}</div></div>`:''}
+          ${c.link?`<a class="cc-link" href="${c.link}" target="_blank">▶️ Join Class</a>`:''}
+        </div>
+      </div>`).join('');
+  }catch(_){
+    document.getElementById('classes-content').innerHTML='<div class="no-class"><div class="nc-icon">📅</div><p>Classes load nahi huyi. Refresh karo.</p></div>';
+  }
+}
+
+// ══════════════════════════════════════════════
+// DASHBOARD TABS
+// ══════════════════════════════════════════════
+function switchTab(name){
+  ['home','classes','buddy','profile'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+    document.getElementById('bn-'+t).classList.toggle('active',t===name);
+  });
+  if(name==='buddy') document.getElementById('userInput')?.focus();
+}
+
+// ══════════════════════════════════════════════
+// BUDDY CHAT
+// ══════════════════════════════════════════════
+function initBuddy(){
+  loadChatHistory();
+  const chatBox=document.getElementById('chatBox');
+  chatBox.innerHTML='';
+  sugShown=false;
+
+  if(conversationHistory.length>0){
+    conversationHistory.forEach(msg=>{
+      if(msg.role==='user') appendUserBub(msg.content,false);
+      else if(msg.role==='assistant') appendBotBub(msg.content,false);
+    });
+    scrollChat();
+    document.getElementById('sugWrap').style.display='none';
+  } else {
+    renderBuddyWelcome();
+    document.getElementById('sugWrap').style.display='block';
+    sugShown=true;
+  }
+}
+
+function renderBuddyWelcome(){
+  const first=(currentUser?.name||'Student').split(' ')[0];
+  const el=document.createElement('div');
+  el.className='welcome-card-buddy';
+  el.innerHTML=`
+    <div class="w-avatar">🤖</div>
+    <h2>Namaste, <em>${esc(first)}!</em></h2>
+    <p>Main hoon <strong style="color:var(--gold)">My Buddy</strong> — tera apna AI study dost!<br>Koi bhi sawal pucho 😊</p>
+    <div class="lang-chips">
+      <span class="lang-chip">🇮🇳 Hindi</span>
+      <span class="lang-chip">🇬🇧 English</span>
+      <span class="lang-chip">🤙 Hinglish</span>
+    </div>`;
+  document.getElementById('chatBox').appendChild(el);
+}
+
+async function sendMessage(){
+  if(isBotTyping) return;
+  const ta=document.getElementById('userInput');
+  const msg=ta.value.trim();
+  if(!msg) return;
+
+  if(sugShown){ document.getElementById('sugWrap').style.display='none'; sugShown=false; }
+
+  ta.value=''; ta.style.height='auto';
+  appendUserBub(msg,true);
+  conversationHistory.push({ role:'user', content:msg });
+  saveChatHistory();
+
+  // Log to sheet (fire and forget)
+  logChatToSheet(currentUser?.mobile||'', currentUser?.name||'', msg);
+
+  const typingId='t'+Date.now();
+  appendTyping(typingId);
+  isBotTyping=true;
+  document.getElementById('sendBtn').disabled=true;
+
+  try{
+    const messages=[
+      { role:'user', content:SYSTEM_PROMPT+'\n\nStudent name: '+(currentUser?.name?.split(' ')[0]||'Student') },
+      { role:'assistant', content:'Understood! I will respond in exactly the same language as the user.' },
+      ...conversationHistory.slice(-18)
+    ];
+
+    const params=new URLSearchParams({ action:'chat', messages:JSON.stringify(messages), callback:'_ignore' });
+    // Use fetch (not JSONP) for POST-like GET — but GAS needs JSONP for cross-origin
+    const res=await jsonpFetch(BUDDY_URL+'?action=chat&messages='+encodeURIComponent(JSON.stringify(messages)));
+    document.getElementById(typingId)?.remove();
+    const reply=res?.reply||'⚠️ Kuch problem aayi. Dobara try karo!';
+    conversationHistory.push({ role:'assistant', content:reply });
+    saveChatHistory();
+    appendBotBub(reply,true);
+  }catch(_){
+    document.getElementById(typingId)?.remove();
+    appendBotBub('⚠️ Network error. Internet check karo aur dobara try karo.',true);
+  }
+
+  isBotTyping=false;
+  document.getElementById('sendBtn').disabled=false;
+  document.getElementById('userInput').focus();
+}
+
+function logChatToSheet(mobile,name,msg){
+  // Fire and forget — saves sent message to ChatHistory sheet
+  postData({ action:'logChat', mobile, name, message:msg });
+}
+
+function appendUserBub(text,animate){
+  const chatBox=document.getElementById('chatBox');
+  const row=document.createElement('div');
+  row.className='msg-row user-msg';
+  if(!animate) row.style.animation='none';
+  row.innerHTML=`
+    <div class="msg-av">😊</div>
+    <div class="msg-col">
+      <div class="msg-bub">${esc(text)}</div>
+      <div class="msg-time">${timeNow()}</div>
+    </div>`;
+  chatBox.appendChild(row);
+  if(animate) scrollChat();
+}
+
+function appendBotBub(text,animate){
+  const chatBox=document.getElementById('chatBox');
+  const row=document.createElement('div');
+  row.className='msg-row';
+  if(!animate) row.style.animation='none';
+  row.innerHTML=`
+    <div class="msg-av">🤖</div>
+    <div class="msg-col">
+      <div class="msg-bub">${marked.parse(text)}</div>
+      <div class="msg-time">${timeNow()}</div>
+    </div>`;
+  chatBox.appendChild(row);
+  if(animate) scrollChat();
+}
+
+function appendTyping(id){
+  const chatBox=document.getElementById('chatBox');
+  const row=document.createElement('div');
+  row.className='msg-row'; row.id=id;
+  row.innerHTML=`
+    <div class="msg-av">🤖</div>
+    <div class="typing-bub">
+      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+    </div>`;
+  chatBox.appendChild(row);
+  scrollChat();
+}
+
+function useSug(text){ document.getElementById('userInput').value=text; sendMessage(); }
+function scrollChat(){ const cb=document.getElementById('chatBox'); setTimeout(()=>cb.scrollTo({top:cb.scrollHeight,behavior:'smooth'}),60); }
+
+// ══════════════════════════════════════════════
+// LOGOUT
+// ══════════════════════════════════════════════
+function logout(){
+  clearLocal();
+  currentUser=null;
+  conversationHistory=[];
+  showScreen('screen-auth');
+  setMode('register');
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function timeNow(){ return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

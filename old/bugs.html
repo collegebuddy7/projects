@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>College Buddy – Project in 40 Days</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#1b3a5c;
+  --green:#52a823;
+  --green2:#3d8019;
+  --gold:#f5a623;
+  --red:#ef4444;
+  --bg:#f0f4f8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;padding-bottom:6rem;}
+
+/* ── NAV ── */
+nav{background:#fff;position:sticky;top:0;z-index:300;box-shadow:0 2px 12px rgba(27,58,92,.1);border-bottom:1.5px solid #e8edf3;}
+.nav-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:.7rem;padding:.45rem 1rem;}
+.nav-logo{height:44px;object-fit:contain;flex-shrink:0;padding:3px;}
+.nav-title{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.95rem;flex:1;line-height:1.2;}
+.nav-title span{display:block;font-size:.68rem;color:var(--green);font-weight:700;}
+.nav-info-btn{background:var(--navy);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.nav-info-btn:hover{background:var(--green);}
+
+/* ── INTERNSHIP BANNER ── */
+.internship-banner{display:none;position:fixed;top:68px;right:.75rem;z-index:500;width:min(320px,calc(100vw - 1.5rem));animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.ib-card{background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(27,58,92,.18);border:2px solid var(--gold);overflow:hidden;}
+.ib-header{background:linear-gradient(135deg,var(--navy),#254e7a);padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+.ib-close{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;width:24px;height:24px;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ib-body{padding:.85rem 1rem;}
+.ib-step{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.55rem;font-size:.78rem;color:#334155;line-height:1.4;}
+.ib-step-num{background:var(--green);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;}
+.ib-wa{display:block;text-align:center;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:10px;padding:.55rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;margin-top:.6rem;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#1b3a5c 0%,#1e4d7a 45%,#1a5e38 100%);padding:1.6rem 1rem 2rem;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:'{ }';position:absolute;font-size:9rem;font-family:'Nunito',sans-serif;font-weight:900;color:rgba(255,255,255,.04);right:-1rem;bottom:-1.5rem;pointer-events:none;line-height:1;}
+.chip{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:.24rem .78rem;color:#a8e063;font-size:.72rem;font-weight:600;margin-bottom:.5rem;}
+.hero h1{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:clamp(1.3rem,5vw,1.85rem);line-height:1.2;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero-sub{color:rgba(255,255,255,.65);font-size:.8rem;margin-top:.25rem;}
+
+/* Seats + Date row */
+.hero-meta{display:flex;justify-content:center;gap:.6rem;margin-top:.85rem;flex-wrap:wrap;}
+.hero-pill{display:inline-flex;align-items:center;gap:.35rem;border-radius:8px;padding:.32rem .75rem;font-size:.76rem;font-weight:600;}
+.pill-seats{background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.4);color:#fca5a5;}
+.pill-date{background:rgba(245,166,35,.18);border:1px solid rgba(245,166,35,.4);color:var(--gold);}
+
+/* Progress */
+.pw{background:rgba(255,255,255,.14);border-radius:99px;height:5px;margin:.85rem auto 0;max-width:300px;}
+#pg{height:5px;border-radius:99px;background:linear-gradient(90deg,var(--gold),#ffd95e);width:0%;transition:width .35s ease;}
+#pg-t{color:rgba(255,255,255,.5);font-size:.68rem;margin-top:.25rem;}
+
+/* Step indicators */
+.steps-row{display:flex;justify-content:center;gap:0;margin-top:.9rem;}
+.step-dot{display:flex;align-items:center;gap:0;}
+.step-circle{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.3);color:rgba(255,255,255,.45);font-family:'Nunito',sans-serif;font-weight:900;font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.step-circle.active{border-color:var(--gold);background:var(--gold);color:var(--navy);}
+.step-circle.done{border-color:var(--green);background:var(--green);color:#fff;}
+.step-line{width:36px;height:2px;background:rgba(255,255,255,.2);margin:0 2px;}
+.step-line.done{background:var(--green);}
+
+/* ── CARD ── */
+.wrap{max-width:600px;margin:1.2rem auto 0;padding:0 1rem;}
+.card{background:#fff;border-radius:18px;box-shadow:0 4px 28px rgba(27,58,92,.09);overflow:hidden;animation:up .4s ease both;}
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.cs{padding:1.4rem 1.25rem;}
+@media(min-width:500px){.cs{padding:1.75rem 1.75rem;}}
+
+/* Section label */
+.sec-label{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.95rem;margin-bottom:1rem;display:flex;align-items:center;gap:.4rem;}
+.sec-label span{font-size:.7rem;background:var(--navy);color:#fff;border-radius:99px;padding:.1rem .5rem;font-weight:700;}
+
+/* Referral bar */
+.ref-bar{display:none;align-items:center;gap:.5rem;background:linear-gradient(90deg,#f0fae8,#e8f4ff);border:1.5px solid #b6dfa0;border-radius:11px;padding:.6rem .9rem;margin-bottom:1rem;font-size:.81rem;color:var(--navy);}
+.ref-bar strong{color:var(--green2);}
+
+/* Duplicate popup */
+.dup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:1rem;}
+.dup-card{background:#fff;border-radius:20px;padding:1.5rem 1.25rem;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);animation:up .3s ease;}
+.dup-icon{font-size:2.4rem;margin-bottom:.4rem;}
+.dup-card h3{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:1.1rem;margin-bottom:.35rem;}
+.dup-card p{font-size:.8rem;color:#64748b;line-height:1.55;margin-bottom:1rem;}
+.dup-btn{width:100%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:12px;padding:.8rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;}
+
+/* FIELD */
+.field{margin-bottom:1rem;}
+.lbl{display:block;font-weight:600;font-size:.81rem;color:#334155;margin-bottom:.28rem;}
+.req{color:#ef4444;}
+.fi{width:100%;border:2px solid #e2e8f0;border-radius:10px;padding:.6rem .9rem;font-family:'Poppins',sans-serif;font-size:.86rem;color:#1e293b;background:#f8fafc;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(82,168,35,.12);background:#fff;}
+.fi.err{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.09);}
+select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%231b3a5c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .85rem center;padding-right:2.2rem;cursor:pointer;}
+.et{font-size:.71rem;color:#ef4444;margin-top:.22rem;display:none;}
+
+/* Radio/Toggle pills */
+.rg{display:flex;flex-wrap:wrap;gap:.4rem;}
+.rp{display:flex;align-items:center;gap:.35rem;padding:.4rem .78rem;border:2px solid #e2e8f0;border-radius:99px;cursor:pointer;font-size:.8rem;background:#f8fafc;transition:all .15s;user-select:none;}
+.rp:hover{border-color:var(--green);background:#f0fae8;}
+.rp input{accent-color:var(--green);width:13px;height:13px;}
+.rp.sel{border-color:var(--green);background:#f0fae8;font-weight:700;color:var(--navy);}
+
+/* Project type big cards */
+.pt-grid{display:grid;grid-template-columns:1fr;gap:.5rem;}
+.pt-card{border:2px solid #e2e8f0;border-radius:12px;padding:.7rem .9rem;cursor:pointer;transition:all .18s;background:#f8fafc;display:flex;align-items:center;gap:.6rem;}
+.pt-card:hover{border-color:var(--green);background:#f0fae8;}
+.pt-card.sel{border-color:var(--green);background:#f0fae8;}
+.pt-card input{accent-color:var(--green);width:15px;height:15px;flex-shrink:0;}
+.pt-card-text{font-size:.82rem;font-weight:600;color:var(--navy);}
+.pt-card-sub{font-size:.7rem;color:#64748b;font-weight:400;}
+
+/* Project experience toggle */
+.proj-toggle{display:flex;gap:.4rem;margin-bottom:.5rem;}
+.proj-input-wrap{display:none;}
+.proj-input-wrap.show{display:block;}
+
+/* Buttons */
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:12px;padding:.9rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.45rem;box-shadow:0 4px 16px rgba(82,168,35,.36);transition:transform .15s,box-shadow .15s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(82,168,35,.45);}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.spin{width:17px;height:17px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none;}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+hr.dv{border:none;border-top:2px solid #f1f5f9;margin:1rem 0;}
+
+/* Intro helper box */
+.intro-helper{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fcd34d;border-radius:12px;padding:.75rem 1rem;margin-bottom:.85rem;font-size:.78rem;color:#78350f;line-height:1.6;}
+.intro-helper strong{color:#92400e;}
+
+/* ── SUCCESS ── */
+.success-wrap{display:none;max-width:600px;margin:1rem auto 0;padding:0 1rem 1rem;}
+.success-card{background:#fff;border-radius:20px;box-shadow:0 4px 28px rgba(27,58,92,.1);overflow:hidden;animation:up .5s ease both;}
+.success-header{background:linear-gradient(135deg,var(--green),var(--green2));padding:1.2rem 1.5rem;text-align:center;}
+.success-header h2{font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:1.3rem;}
+.success-header p{color:rgba(255,255,255,.82);font-size:.78rem;margin-top:.15rem;}
+
+/* Ref code */
+.ref-code-box{background:linear-gradient(135deg,var(--navy),#254e7a);border-radius:14px;padding:.9rem 1rem;display:flex;align-items:center;gap:.9rem;margin-bottom:.85rem;}
+.ref-code-icon{font-size:1.6rem;flex-shrink:0;}
+.ref-code-label{color:rgba(255,255,255,.55);font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.ref-code-value{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.55rem;color:#fff;letter-spacing:.06em;line-height:1.1;}
+.ref-code-sub{color:rgba(255,255,255,.4);font-size:.66rem;}
+
+/* Two action cards */
+.action-cards{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.75rem;}
+@media(max-width:380px){.action-cards{grid-template-columns:1fr;}}
+.action-card{border-radius:14px;padding:.9rem .8rem;text-align:center;border:2px solid;}
+.ac-group{background:#f0fae8;border-color:#b6dfa0;}
+.ac-invite{background:#e8f4ff;border-color:#93c5fd;}
+.action-card .ac-icon{font-size:1.6rem;margin-bottom:.3rem;}
+.action-card .ac-title{font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.85rem;margin-bottom:.2rem;}
+.action-card .ac-sub{font-size:.7rem;color:#64748b;margin-bottom:.65rem;line-height:1.45;}
+.ac-btn{display:inline-flex;align-items:center;justify-content:center;gap:.3rem;border:none;border-radius:10px;padding:.55rem .9rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;text-decoration:none;transition:transform .15s;}
+.ac-btn:hover{transform:translateY(-1px);}
+.ac-btn-green{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 3px 12px rgba(37,211,102,.35);}
+.ac-btn-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;box-shadow:0 3px 12px rgba(59,130,246,.35);}
+
+/* WA bubble */
+.wa-bubble-wrap{background:#e5f8e0;border-radius:12px;padding:.6rem .7rem .8rem;position:relative;margin-bottom:.6rem;}
+.wa-bubble-header{display:flex;align-items:center;gap:.4rem;padding-bottom:.4rem;border-bottom:1px solid rgba(0,0,0,.07);margin-bottom:.5rem;}
+.wa-bubble-msg{background:#dcf8c6;border-radius:10px 2px 10px 10px;padding:.6rem .75rem;position:relative;font-size:.79rem;color:#111;line-height:1.6;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.wa-tail{position:absolute;top:0;right:-6px;width:0;height:0;border-left:7px solid #dcf8c6;border-bottom:7px solid transparent;}
+.wa-tick{display:flex;align-items:center;justify-content:flex-end;gap:.2rem;margin-top:.28rem;}
+
+/* Join group (unlocked) */
+.join-unlocked{display:none;background:linear-gradient(135deg,#f0fae8,#e8f4ff);border:2px solid #b6dfa0;border-radius:14px;padding:.9rem 1rem;text-align:center;margin-top:.65rem;animation:up .4s ease both;}
+
+/* Floating bar */
+#floatingBar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;padding:.7rem 1rem;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);box-shadow:0 -4px 20px rgba(0,0,0,.12);border-top:1.5px solid #e8edf3;}
+.fb-inner{max-width:600px;margin:0 auto;display:flex;gap:.55rem;align-items:center;}
+#fbShareBtn{flex:1;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:12px;padding:.78rem .5rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;box-shadow:0 4px 16px rgba(37,211,102,.38);transition:transform .15s;}
+#fbShareBtn:hover{transform:translateY(-1px);}
+#fbShareBtn.done{background:#94a3b8;box-shadow:none;cursor:default;transform:none;}
+#fbCopyBtn{background:var(--navy);color:#fff;border:none;border-radius:12px;padding:.78rem .85rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.76rem;cursor:pointer;white-space:nowrap;transition:background .15s;}
+#fbCopyBtn:hover{background:var(--green2);}
+#fbCopyBtn.copied{background:var(--green);}
+
+.footer-note{text-align:center;font-size:.66rem;color:#94a3b8;margin-top:.7rem;padding-bottom:.5rem;}
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <div class="nav-inner">
+    <img src="cbdlogo.png" alt="College Buddy" class="nav-logo"
+         onerror="this.outerHTML='<span style=\'font-family:Nunito,sans-serif;font-weight:900;font-size:1.1rem;color:#1b3a5c\'>College<span style=\'color:#52a823\'>Buddy</span></span>'"/>
+    <div class="nav-title">
+      Project in 40 Days
+      <span>Learn Skills &amp; Make Resume</span>
+    </div>
+    <button class="nav-info-btn" onclick="toggleBanner()" title="Internship Info">ℹ️</button>
+  </div>
+</nav>
+
+<!-- ── INTERNSHIP INFO BANNER ── -->
+<div class="internship-banner" id="internshipBanner">
+  <div class="ib-card">
+    <div class="ib-header">
+      <span style="font-family:'Nunito',sans-serif;font-weight:900;color:#fff;font-size:.9rem;">🎯 Internship ke baare mein</span>
+      <button class="ib-close" onclick="toggleBanner()">✕</button>
+    </div>
+    <div class="ib-body">
+      <div class="ib-step"><div class="ib-step-num">1</div><div>40 Days mein ek <strong>real project</strong> banao</div></div>
+      <div class="ib-step"><div class="ib-step-num">2</div><div>Resume ready karo — skills + project add karo</div></div>
+      <div class="ib-step"><div class="ib-step-num">3</div><div>Communication &amp; interview preparation</div></div>
+      <div class="ib-step"><div class="ib-step-num">4</div><div>Internship ya job ke liye apply karo 🚀</div></div>
+      <p style="font-size:.72rem;color:#64748b;margin:.4rem 0 .3rem;line-height:1.5;">Koi bhi doubt hai? Harshit Bhaiya se poochho 👇</p>
+      <a class="ib-wa" href="https://wa.me/919801907094" target="_blank">💬 WhatsApp: 980 190 7094</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="chip">🚀 40 Days Program · 6th Sem Students</div>
+  <h1>Complete <em>Project</em> in 40 Days<br/>Learn Skills &amp; Make Resume</h1>
+  <p class="hero-sub">Harshit Bhaiya ke saath seekho, grow karo!</p>
+  <div class="hero-meta">
+    <div class="hero-pill pill-seats">🔥 <span id="seatsLeft">26</span> Seats Only</div>
+    <div class="hero-pill pill-date">📅 Starting 15 April</div>
+  </div>
+  <div class="pw"><div id="pg"></div></div>
+  <p id="pg-t"></p>
+  <div class="steps-row">
+    <div class="step-dot">
+      <div class="step-circle active" id="sc1">1</div>
+      <div class="step-line" id="sl1"></div>
+    </div>
+    <div class="step-dot">
+      <div class="step-circle" id="sc2">2</div>
+      <div class="step-line" id="sl2"></div>
+    </div>
+    <div class="step-dot">
+      <div class="step-circle" id="sc3">3</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── REFERRAL BAR (inside form wrap, above card) ── -->
+<div class="wrap" id="refBarWrap" style="margin-bottom:0;padding-bottom:0;">
+  <div class="ref-bar" id="refBar">
+    👋 Aapko <strong id="refName"></strong> ne refer kiya hai!
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 1: Basic Details
+═══════════════════════════════ -->
+<div class="wrap" id="screen1">
+  <div class="card">
+    <div class="cs">
+      <div class="sec-label">📋 Basic Details <span>Step 1 / 3</span></div>
+
+      <div class="field">
+        <label class="lbl">Full Name <span class="req">*</span></label>
+        <input type="text" id="f-name" class="fi" placeholder="Apna pura naam likhein" autocomplete="name"/>
+        <p class="et" id="e-name">Naam required hai.</p>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Mobile Number <span class="req">*</span></label>
+        <input type="tel" id="f-mobile" class="fi" placeholder="10-digit number" maxlength="10" inputmode="numeric"/>
+        <p class="et" id="e-mobile">Valid 10-digit number enter karein.</p>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Email Address <span class="req">*</span></label>
+        <input type="email" id="f-email" class="fi" placeholder="example@gmail.com" inputmode="email" autocomplete="email"/>
+        <p class="et" id="e-email">Valid email enter karein.</p>
+      </div>
+
+      <div class="field" style="margin-bottom:1.4rem;">
+        <label class="lbl">College <span class="req">*</span></label>
+        <select id="f-college" class="fi">
+          <option value="">-- Apna College Select Karein --</option>
+        </select>
+        <p class="et" id="e-college">College select karein.</p>
+      </div>
+
+      <button class="btn-primary" id="s1Btn" onclick="submitScreen1()">
+        <div class="spin" id="s1spin"></div>
+        <span id="s1txt">Next →</span>
+      </button>
+    </div>
+  </div>
+  <p class="footer-note">© 2025 College Buddy · Data saved securely</p>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 2: Tech & Skills
+═══════════════════════════════ -->
+<div class="wrap" id="screen2" style="display:none;">
+  <div class="card">
+    <div class="cs">
+      <div class="sec-label">💻 Tech &amp; Skills <span>Step 2 / 3</span></div>
+
+      <!-- Project Experience -->
+      <div class="field">
+        <label class="lbl">Koi Project Banaya Hai Pehle? <span class="req">*</span></label>
+        <div class="rg proj-toggle" id="projToggleGroup">
+          <label class="rp"><input type="radio" name="proj_exp" value="Nahi"/> ❌ Nahi</label>
+          <label class="rp"><input type="radio" name="proj_exp" value="haan_custom" id="projYesRadio"/> ✅ Haan — kaunsa?</label>
+        </div>
+        <p class="et" id="e-proj">Ek option select karein.</p>
+        <div class="proj-input-wrap" id="projInputWrap">
+          <input type="text" id="f-proj-detail" class="fi" placeholder="Project ka naam / description likhein..." style="margin-top:.5rem;"/>
+        </div>
+      </div>
+
+      <!-- GitHub -->
+      <div class="field">
+        <label class="lbl">GitHub Account Hai? <span class="req">*</span></label>
+        <div class="rg">
+          <label class="rp"><input type="radio" name="github" value="Haan"/> ✅ Haan</label>
+          <label class="rp"><input type="radio" name="github" value="Nahi"/> ❌ Nahi</label>
+        </div>
+        <p class="et" id="e-github">Ek option select karein.</p>
+      </div>
+
+      <!-- LinkedIn -->
+      <div class="field">
+        <label class="lbl">LinkedIn Profile Hai? <span class="req">*</span></label>
+        <div class="rg">
+          <label class="rp"><input type="radio" name="linkedin" value="Haan"/> ✅ Haan</label>
+          <label class="rp"><input type="radio" name="linkedin" value="Nahi"/> ❌ Nahi</label>
+        </div>
+        <p class="et" id="e-linkedin">Ek option select karein.</p>
+      </div>
+
+      <!-- MCA -->
+      <div class="field">
+        <label class="lbl">MCA Karne Wale Hain? <span class="req">*</span></label>
+        <div class="rg">
+          <label class="rp"><input type="radio" name="mca" value="Haan"/> 🎓 Haan</label>
+          <label class="rp"><input type="radio" name="mca" value="Nahi"/> ❌ Nahi</label>
+        </div>
+        <p class="et" id="e-mca">Ek option select karein.</p>
+      </div>
+
+      <hr class="dv"/>
+
+      <!-- Laptop -->
+      <div class="field">
+        <label class="lbl">Laptop / Computer Hai? <span class="req">*</span></label>
+        <div class="rg">
+          <label class="rp"><input type="radio" name="laptop" value="Haan"/> 💻 Haan</label>
+          <label class="rp"><input type="radio" name="laptop" value="Nahi"/> 📱 Nahi, Bas Phone</label>
+        </div>
+        <p class="et" id="e-laptop">Ek option select karein.</p>
+      </div>
+
+      <!-- Project Type -->
+      <div class="field" style="margin-bottom:1.4rem;">
+        <label class="lbl">Kaisa Project Banana Chahenge? <span class="req">*</span></label>
+        <div class="pt-grid">
+          <label class="pt-card">
+            <input type="radio" name="proj_type" value="Full Stack Project"/>
+            <div>
+              <div class="pt-card-text">🌐 Full Stack Project</div>
+              <div class="pt-card-sub">HTML, CSS, JS, Node/PHP + Database</div>
+            </div>
+          </label>
+          <label class="pt-card">
+            <input type="radio" name="proj_type" value="Python & AI Project"/>
+            <div>
+              <div class="pt-card-text">🤖 Python &amp; AI Project</div>
+              <div class="pt-card-sub">Machine Learning, Data, Automation</div>
+            </div>
+          </label>
+          <label class="pt-card">
+            <input type="radio" name="proj_type" value="Java Project"/>
+            <div>
+              <div class="pt-card-text">☕ Java Project</div>
+              <div class="pt-card-sub">Core Java / Spring / Android</div>
+            </div>
+          </label>
+        </div>
+        <p class="et" id="e-proj-type">Ek project type select karein.</p>
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen3()">
+        Next →
+      </button>
+    </div>
+  </div>
+  <p class="footer-note">© 2025 College Buddy</p>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 3: Intro + Feedback
+═══════════════════════════════ -->
+<div class="wrap" id="screen3" style="display:none;">
+  <div class="card">
+    <div class="cs">
+      <div class="sec-label">✍️ Apne Baare Mein <span>Step 3 / 3</span></div>
+
+      <!-- Introduction helper -->
+      <div class="intro-helper">
+        💡 <strong>Thoda sochke likhna:</strong> Yeh ek paid course hai, lekin kuch logo ki help <strong>FREE</strong> me ki jayegi. Isiliye apna introduction achhe se likho — batao ki tum kaun ho, kya seekhna chahte ho, aur kyun ye course tumhare liye helpful hoga.
+      </div>
+
+      <div class="field">
+        <label class="lbl">Apna Introduction Likho <span class="req">*</span></label>
+        <textarea id="f-intro" class="fi" rows="5" placeholder="Apne baare me achhe se batao — naam, college, interests, aur kyun ye 40-day program join karna chahte ho..." style="resize:none;"></textarea>
+        <p class="et" id="e-intro">Introduction required hai (minimum 30 characters).</p>
+        <p id="intro-count" style="font-size:.68rem;color:#94a3b8;margin-top:.2rem;">0 characters</p>
+      </div>
+
+      <div class="field" style="margin-bottom:1.4rem;">
+        <label class="lbl">Feedback / Suggestion <span class="req">*</span></label>
+        <textarea id="f-feedback" class="fi" rows="3" placeholder="Koi sawaal, expectation ya suggestion..." style="resize:none;"></textarea>
+        <p class="et" id="e-feedback">Feedback required hai.</p>
+      </div>
+
+      <button class="btn-primary" id="s3Btn" onclick="submitFinal()">
+        <div class="spin" id="s3spin"></div>
+        <span id="s3txt">Submit Registration 🚀</span>
+      </button>
+    </div>
+  </div>
+  <p class="footer-note">© 2025 College Buddy</p>
+</div>
+
+<!-- ══════════════════════════════
+     SUCCESS SCREEN
+═══════════════════════════════ -->
+<div class="success-wrap" id="successSection">
+  <div class="success-card">
+    <div class="success-header">
+      <div style="font-size:2.2rem;margin-bottom:.3rem;">🎉</div>
+      <h2>Registration Ho Gaya!</h2>
+      <p>15 April se taiyaar rehna 📅 · Harshit Bhaiya ke saath 🚀</p>
+    </div>
+    <div class="cs" style="padding:1rem 1.1rem;">
+
+      <!-- Ref code box -->
+      <div class="ref-code-box">
+        <div class="ref-code-icon">🔗</div>
+        <div>
+          <div class="ref-code-label">Aapka Referral Code</div>
+          <div class="ref-code-value" id="myRefCode">—</div>
+          <div class="ref-code-sub">Dosto ko invite karne ke liye use karo</div>
+        </div>
+      </div>
+
+      <!-- Two action cards -->
+      <div class="action-cards">
+        <div class="action-card ac-group">
+          <div class="ac-icon">👥</div>
+          <div class="ac-title">Group Join Karo</div>
+          <div class="ac-sub">WhatsApp group mein saath seekhenge</div>
+          <a class="ac-btn ac-btn-green" href="https://chat.whatsapp.com/KY8ALp4BSryEnkT29Moi4j" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.121 1.522 5.857L.058 23.5l5.818-1.525A11.939 11.939 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.804 9.804 0 0 1-5.012-1.369l-.358-.213-3.724.976.994-3.63-.234-.373A9.79 9.79 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182c5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
+            Join Group
+          </a>
+        </div>
+        <div class="action-card ac-invite">
+          <div class="ac-icon">📲</div>
+          <div class="ac-title">3–5 Dost Bulao</div>
+          <div class="ac-sub">Share karo aur saath mein seekho!</div>
+          <button class="ac-btn ac-btn-blue" onclick="shareOnWhatsApp()">
+            Share Now
+          </button>
+        </div>
+      </div>
+
+      <!-- WA Bubble message -->
+      <div class="wa-bubble-wrap">
+        <div class="wa-bubble-header">
+          <div style="width:26px;height:26px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0;">👥</div>
+          <div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem;color:#1a1a1a;">College Buddy Friends</div>
+            <div style="font-size:.62rem;color:#6b7280;">Aapka share message</div>
+          </div>
+          <button id="copyMsgBtn" onclick="copyMessage()" style="margin-left:auto;background:rgba(0,0,0,.08);border:none;border-radius:6px;padding:.2rem .55rem;font-size:.66rem;font-weight:700;color:#374151;cursor:pointer;font-family:'Nunito',sans-serif;">📋 Copy</button>
+        </div>
+        <div class="wa-bubble-msg">
+          <div class="wa-tail"></div>
+          <div id="waMessageBubble"></div>
+          <div class="wa-tick">
+            <span style="font-size:.6rem;color:#6b7280;" id="msgTime"></span>
+            <svg width="13" height="9" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L5 9.5L15 1.5" stroke="#4FC3F7" stroke-width="1.8" stroke-linecap="round"/><path d="M5 5.5L9 9.5L15 3" stroke="#4FC3F7" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unlocked join section (after share) -->
+      <div class="join-unlocked" id="joinUnlocked">
+        <div style="font-size:1.5rem;margin-bottom:.3rem;">🎊</div>
+        <div style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--navy);font-size:.92rem;margin-bottom:.25rem;">Group Unlock Ho Gaya!</div>
+        <p style="font-size:.74rem;color:#64748b;margin-bottom:.7rem;">Share karne ke liye shukriya! Ab WhatsApp Group join karo 🔔</p>
+        <a href="https://chat.whatsapp.com/KY8ALp4BSryEnkT29Moi4j" target="_blank"
+           style="display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:10px;padding:.65rem 1.3rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.86rem;box-shadow:0 4px 14px rgba(37,211,102,.36);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.121 1.522 5.857L.058 23.5l5.818-1.525A11.939 11.939 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.804 9.804 0 0 1-5.012-1.369l-.358-.213-3.724.976.994-3.63-.234-.373A9.79 9.79 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182c5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
+          Join WhatsApp Group
+        </a>
+      </div>
+
+    </div>
+  </div>
+  <p class="footer-note">© 2025 College Buddy</p>
+</div>
+
+<!-- ── DUPLICATE POPUP ── -->
+<div class="dup-overlay" id="dupOverlay">
+  <div class="dup-card">
+    <div class="dup-icon">👋</div>
+    <h3>Aap Pehle Se Registered Hain!</h3>
+    <p id="dupMsg">Yeh mobile number already registered hai. Aapko Step 2 pe redirect kar rahe hain — baaki details fill karein!</p>
+    <button class="dup-btn" onclick="redirectToStep2()">Continue — Step 2 pe Jao →</button>
+  </div>
+</div>
+
+<!-- ── STICKY FLOATING BAR (after success) ── -->
+<div id="floatingBar">
+  <div class="fb-inner">
+    <button id="fbShareBtn" onclick="shareOnWhatsApp()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.121 1.522 5.857L.058 23.5l5.818-1.525A11.939 11.939 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.804 9.804 0 0 1-5.012-1.369l-.358-.213-3.724.976.994-3.63-.234-.373A9.79 9.79 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182c5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
+      Dosto ko Share Karo 📲
+    </button>
+    <button id="fbCopyBtn" onclick="copyMessageFloat()">📋 Copy</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — replace before deploying
+// ═══════════════════════════════════════════════
+const SHEET_URL  = 'https://script.google.com/macros/s/AKfycbypS8Gd02QeipQiJ99JT5DViD9G752QlvneBtHTbNFWMiMuTSgonowGFitSuTMLXRw/exec';
+const PAGE_URL   = 'https://github.com/collegebuddy7/projects';
+
+// ═══════════════════════════════════════════════
+// COLLEGES
+// ═══════════════════════════════════════════════
+const COLLEGES = [
+  "A.B.S. College, Lalganj","B.M.D. College, Dayalpur","CN College, Sahebganj",
+  "Dr. R.M.L.S. College, Muzaffarpur","Indu Devi Ranjeet Kumar Prakash",
+  "J.L. College, Hajipur","J.L.N.M. College, Ghorasahan","K.C.T.C. College, Raxaul",
+  "L.N.T. College, Muzaffarpur","L.N. College, Bhagwanpur","L.N.D. College, Motihari",
+  "L.S. College, Muzaffarpur","M.S.M. Samata College, Jandah","M.S.S.G. College, Areraj",
+  "M.D.D.M. College, Muzaffarpur","M.J.K. College, Bettiah","M.P.S. Sc. College, Muzaffarpur",
+  "M.S. College, Motihari","Nitishwar College, Muzaffarpur","Ranjeet Kumar Prakash",
+  "R.D.S. College, Muzaffarpur","R.L.S.Y. College, Bettiah","R.N. College, Hajipur",
+  "R.S.S.M. College, Sitamarhi","R.S.S. Sc. College, Sitamarhi",
+  "Rameshwar Mahavidyalaya, Muzaffarpur","S.R.A.P. College, Barachakia",
+  "S.L.K. College, Sitamarhi","S.N.S. College, Motihari","S.R.K.G. College, Sitamarhi",
+  "Umesh Kumar Ranjeet Vidayalya",
+  "Vaishali Institute of Business and Rural Management, Muzaffarpur","Other"
+];
+(function(){
+  const sel=document.getElementById('f-college');
+  COLLEGES.forEach((c,i)=>{ const o=document.createElement('option'); o.value=c; o.textContent=(i+1)+'. '+c; sel.appendChild(o); });
+})();
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let myRefCode = '';
+let submittedMobile = '';
+let _waMsg = '';
+
+// ═══════════════════════════════════════════════
+// REFERRAL FROM URL
+// ═══════════════════════════════════════════════
+(function(){
+  const ref = new URLSearchParams(window.location.search).get('ref');
+  if(ref){
+    document.getElementById('refName').textContent = decodeURIComponent(ref);
+    document.getElementById('refBar').style.display = 'flex';
+  }
+})();
+
+// ═══════════════════════════════════════════════
+// INTERNSHIP BANNER TOGGLE
+// ═══════════════════════════════════════════════
+function toggleBanner(){
+  const b = document.getElementById('internshipBanner');
+  b.style.display = b.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', function(e){
+  const banner = document.getElementById('internshipBanner');
+  if(banner.style.display==='block' && !banner.contains(e.target) && !document.querySelector('.nav-info-btn').contains(e.target)){
+    banner.style.display='none';
+  }
+});
+
+// ═══════════════════════════════════════════════
+// RADIO HIGHLIGHT
+// ═══════════════════════════════════════════════
+document.addEventListener('change', function(e){
+  if(e.target.type === 'radio'){
+    const name = e.target.name;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(i => i.closest('.rp, .pt-card')?.classList.remove('sel'));
+    e.target.closest('.rp, .pt-card')?.classList.add('sel');
+  }
+  // Project experience toggle
+  if(e.target.name === 'proj_exp'){
+    const wrap = document.getElementById('projInputWrap');
+    wrap.classList.toggle('show', e.target.value === 'haan_custom');
+  }
+});
+
+// ═══════════════════════════════════════════════
+// PROGRESS BAR
+// ═══════════════════════════════════════════════
+function updateProgress(){
+  const screen = getCurrentScreen();
+  let done = 0, total = 0;
+  if(screen === 1){
+    total = 4;
+    if(document.getElementById('f-name').value.trim()) done++;
+    if(/^\d{10}$/.test(document.getElementById('f-mobile').value.trim())) done++;
+    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('f-email').value.trim())) done++;
+    if(document.getElementById('f-college').value) done++;
+  } else if(screen === 2){
+    total = 5; done = 1;
+    if(document.querySelector('input[name="proj_exp"]:checked')) done++;
+    if(document.querySelector('input[name="github"]:checked')) done++;
+    if(document.querySelector('input[name="linkedin"]:checked')) done++;
+    if(document.querySelector('input[name="laptop"]:checked')) done++;
+    if(document.querySelector('input[name="proj_type"]:checked')) done++;
+  } else if(screen === 3){
+    total = 2; done = 2;
+    if(document.getElementById('f-intro').value.trim().length >= 30) done++;
+    if(document.getElementById('f-feedback').value.trim()) done++;
+    done = Math.min(done, 2);
+  }
+  const base = screen === 1 ? 0 : screen === 2 ? 33 : 66;
+  const stepPct = screen === 1 ? 33 : screen === 2 ? 33 : 34;
+  const pct = Math.round(base + (done / (total || 1)) * stepPct);
+  document.getElementById('pg').style.width = pct + '%';
+  document.getElementById('pg-t').textContent = pct < 100 ? pct + '% complete' : '✅ Almost done!';
+}
+function getCurrentScreen(){
+  if(document.getElementById('screen2').style.display !== 'none') return 2;
+  if(document.getElementById('screen3').style.display !== 'none') return 3;
+  return 1;
+}
+document.addEventListener('input', updateProgress);
+document.addEventListener('change', updateProgress);
+
+// Intro character count
+document.getElementById('f-intro').addEventListener('input', function(){
+  document.getElementById('intro-count').textContent = this.value.length + ' characters';
+});
+
+// ═══════════════════════════════════════════════
+// GENERATE REF CODE
+// ═══════════════════════════════════════════════
+function generateRefCode(fullName, mobile){
+  const first = fullName.trim().split(/\s+/)[0].toUpperCase().replace(/[^A-Z]/g,'');
+  return first + mobile.trim().slice(-4);
+}
+
+// ═══════════════════════════════════════════════
+// STEP INDICATOR
+// ═══════════════════════════════════════════════
+function setStep(n){
+  for(let i=1;i<=3;i++){
+    const c = document.getElementById('sc'+i);
+    c.classList.remove('active','done');
+    if(i < n){ c.classList.add('done'); c.textContent='✓'; }
+    else if(i === n){ c.classList.add('active'); c.textContent=i; }
+    else { c.textContent=i; }
+    if(i < 3){
+      const l = document.getElementById('sl'+i);
+      l.classList.toggle('done', i < n);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// VALIDATION helpers
+// ═══════════════════════════════════════════════
+function showErr(id, show){ document.getElementById(id).style.display = show ? 'block' : 'none'; }
+function flagField(id, err){ const el=document.getElementById(id); if(el){ err?el.classList.add('err'):el.classList.remove('err'); } }
+
+// ═══════════════════════════════════════════════
+// JSONP HELPER — GET requests to GAS without CORS block
+// ═══════════════════════════════════════════════
+function jsonpFetch(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_cb_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup(); reject(new Error('JSONP timeout'));
+    }, 8000);
+    function cleanup(){ delete window[cbName]; script.remove(); clearTimeout(timer); }
+    window[cbName] = function(data){ cleanup(); resolve(data); };
+    script.src = url + '&callback=' + cbName;
+    script.onerror = () => { cleanup(); reject(new Error('JSONP error')); };
+    document.head.appendChild(script);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SCREEN 1 SUBMIT
+// ═══════════════════════════════════════════════
+async function submitScreen1(){
+  // Validate
+  let ok = true;
+  const name = document.getElementById('f-name').value.trim();
+  flagField('f-name',!name); showErr('e-name',!name); if(!name) ok=false;
+  const mobile = document.getElementById('f-mobile').value.trim();
+  const mOk = /^\d{10}$/.test(mobile);
+  flagField('f-mobile',!mOk); showErr('e-mobile',!mOk); if(!mOk) ok=false;
+  const email = document.getElementById('f-email').value.trim();
+  const eOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  flagField('f-email',!eOk); showErr('e-email',!eOk); if(!eOk) ok=false;
+  const college = document.getElementById('f-college').value;
+  flagField('f-college',!college); showErr('e-college',!college); if(!college) ok=false;
+  if(!ok){ document.querySelector('.err')?.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  const btn = document.getElementById('s1Btn');
+  document.getElementById('s1spin').style.display = 'block';
+  document.getElementById('s1txt').style.display = 'none';
+  btn.disabled = true;
+
+  // Duplicate check via JSONP (avoids CORS issue with GAS)
+  try {
+    const chkData = await jsonpFetch(
+      SHEET_URL + '?action=checkDuplicate'
+      + '&mobile=' + encodeURIComponent(mobile)
+      + '&email='  + encodeURIComponent(email)
+    );
+    if(chkData && chkData.isDuplicate){
+      submittedMobile = mobile;
+      myRefCode = chkData.refCode || generateRefCode(name, mobile);
+      document.getElementById('s1spin').style.display='none';
+      document.getElementById('s1txt').style.display='inline';
+      btn.disabled=false;
+      document.getElementById('dupOverlay').style.display='flex';
+      return;
+    }
+  } catch(_){ /* network error — proceed, server will handle */ }
+
+  // Save Screen 1
+  submittedMobile = mobile;
+  myRefCode = generateRefCode(name, mobile);
+  const referredBy = decodeURIComponent(new URLSearchParams(window.location.search).get('ref')||'');
+  const payload = {
+    action: 'screen1',
+    timestamp: new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),
+    name, mobile, email, college,
+    referredBy,
+    refCode: myRefCode
+  };
+  try {
+    await fetch(SHEET_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  } catch(_){}
+
+  document.getElementById('s1spin').style.display='none';
+  document.getElementById('s1txt').style.display='inline';
+  btn.disabled=false;
+  goToScreen2();
+}
+
+// ═══════════════════════════════════════════════
+// DUPLICATE REDIRECT
+// ═══════════════════════════════════════════════
+function redirectToStep2(){
+  document.getElementById('dupOverlay').style.display='none';
+  goToScreen2();
+}
+
+// ═══════════════════════════════════════════════
+// GO TO SCREEN 2
+// ═══════════════════════════════════════════════
+function goToScreen2(){
+  document.getElementById('screen1').style.display='none';
+  document.getElementById('screen2').style.display='block';
+  setStep(2);
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════
+// SCREEN 2 → 3
+// ═══════════════════════════════════════════════
+function goToScreen3(){
+  let ok = true;
+  const proj = document.querySelector('input[name="proj_exp"]:checked');
+  showErr('e-proj',!proj); if(!proj) ok=false;
+  const github = document.querySelector('input[name="github"]:checked');
+  showErr('e-github',!github); if(!github) ok=false;
+  const linkedin = document.querySelector('input[name="linkedin"]:checked');
+  showErr('e-linkedin',!linkedin); if(!linkedin) ok=false;
+  const mca = document.querySelector('input[name="mca"]:checked');
+  showErr('e-mca',!mca); if(!mca) ok=false;
+  const laptop = document.querySelector('input[name="laptop"]:checked');
+  showErr('e-laptop',!laptop); if(!laptop) ok=false;
+  const projType = document.querySelector('input[name="proj_type"]:checked');
+  showErr('e-proj-type',!projType); if(!projType) ok=false;
+  if(!ok){ document.querySelector('[id^="e-"]:not([style*="none"])') || window.scrollTo({top:200,behavior:'smooth'}); return; }
+
+  document.getElementById('screen2').style.display='none';
+  document.getElementById('screen3').style.display='block';
+  setStep(3);
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════
+// FINAL SUBMIT (Screen 3)
+// ═══════════════════════════════════════════════
+async function submitFinal(){
+  let ok = true;
+  const intro = document.getElementById('f-intro').value.trim();
+  const introOk = intro.length >= 30;
+  flagField('f-intro',!introOk); showErr('e-intro',!introOk); if(!introOk) ok=false;
+  const feedback = document.getElementById('f-feedback').value.trim();
+  flagField('f-feedback',!feedback); showErr('e-feedback',!feedback); if(!feedback) ok=false;
+  if(!ok){ document.querySelector('.err')?.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  const btn = document.getElementById('s3Btn');
+  document.getElementById('s3spin').style.display='block';
+  document.getElementById('s3txt').style.display='none';
+  btn.disabled=true;
+
+  const projExp = document.querySelector('input[name="proj_exp"]:checked')?.value||'';
+  const projDetail = document.getElementById('f-proj-detail').value.trim();
+  const projValue = projExp === 'haan_custom' ? (projDetail || 'Haan') : projExp;
+
+  const payload = {
+    action: 'screen2and3',
+    mobile: submittedMobile,
+    projExp: projValue,
+    github: document.querySelector('input[name="github"]:checked')?.value||'',
+    linkedin: document.querySelector('input[name="linkedin"]:checked')?.value||'',
+    mca: document.querySelector('input[name="mca"]:checked')?.value||'',
+    laptop: document.querySelector('input[name="laptop"]:checked')?.value||'',
+    projType: document.querySelector('input[name="proj_type"]:checked')?.value||'',
+    introduction: intro,
+    feedback
+  };
+  try {
+    await fetch(SHEET_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  } catch(_){}
+
+  btn.disabled=false;
+  document.getElementById('s3spin').style.display='none';
+  document.getElementById('s3txt').style.display='inline';
+  showSuccess();
+}
+
+// ═══════════════════════════════════════════════
+// SHOW SUCCESS
+// ═══════════════════════════════════════════════
+function showSuccess(){
+  document.getElementById('screen3').style.display='none';
+  document.getElementById('successSection').style.display='block';
+  document.getElementById('floatingBar').style.display='block';
+  setStep(4); // all done
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  document.getElementById('myRefCode').textContent = myRefCode;
+  const now = new Date();
+  document.getElementById('msgTime').textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+  const refLink = PAGE_URL + '?ref=' + encodeURIComponent(myRefCode);
+  _waMsg = `Yaar! 🎓 Ham apna Project *Harshit Bhaiya* ki help se bana rahe hain!\n\n✅ 40 Days mein Real Project\n📄 Resume + Skills bhi banegi\n🚀 Internship ke liye bilkul ready ho jaoge!\n\nTum bhi Join Kar lo 👇\n\n*Ye raha Link:* ${refLink}\n\nAbhi register karo, seats limited hain! 🔥`;
+  document.getElementById('waMessageBubble').textContent = _waMsg;
+
+  // Step dots — all done
+  for(let i=1;i<=3;i++){
+    const c=document.getElementById('sc'+i);
+    c.classList.remove('active');
+    c.classList.add('done');
+    c.textContent='✓';
+    if(i<3) document.getElementById('sl'+i).classList.add('done');
+  }
+  document.getElementById('pg').style.width='100%';
+  document.getElementById('pg-t').textContent='✅ Registration Complete!';
+}
+
+// ═══════════════════════════════════════════════
+// WHATSAPP SHARE
+// ═══════════════════════════════════════════════
+function shareOnWhatsApp(){
+  window.open('https://wa.me/?text=' + encodeURIComponent(_waMsg), '_blank');
+  setTimeout(()=>{
+    document.getElementById('joinUnlocked').style.display='block';
+    const fb = document.getElementById('fbShareBtn');
+    fb.classList.add('done');
+    fb.innerHTML='✓ Shared! Group Join Karo 👆';
+    document.getElementById('joinUnlocked').scrollIntoView({behavior:'smooth',block:'center'});
+  }, 900);
+}
+
+function copyMessage(){
+  navigator.clipboard.writeText(_waMsg||'').then(()=>{
+    const btn=document.getElementById('copyMsgBtn');
+    btn.textContent='✓ Copied!'; btn.style.color='#3d8019';
+    setTimeout(()=>{ btn.textContent='📋 Copy'; btn.style.color=''; },2000);
+  });
+}
+function copyMessageFloat(){
+  navigator.clipboard.writeText(_waMsg||'').then(()=>{
+    const btn=document.getElementById('fbCopyBtn');
+    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='📋 Copy'; btn.classList.remove('copied'); },2000);
+  });
+}
+</script>
+</body>
+</html>
