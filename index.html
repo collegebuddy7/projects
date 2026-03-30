@@ -1332,17 +1332,7 @@ function showCopied(){
 // SHARE
 // ══════════════════════════════════════════════
 function shareWA(){
-  // Use Web Share API if available (mobile native share sheet)
-  if(navigator.share){
-    const link=PAGE_URL+'?ref='+encodeURIComponent(currentUser?.refCode||'');
-    navigator.share({
-      title:'College Buddy — Project in 40 Days',
-      text:'Yaar! 40 Days mein Real Project + Resume banao with Harshit Bhaiya!',
-      url:link
-    }).catch(()=>{}); // user cancelled — no error
-  } else {
-    window.open('https://wa.me/?text='+encodeURIComponent(_waMsg),'_blank');
-  }
+  window.open('https://wa.me/?text='+encodeURIComponent(_waMsg),'_blank');
 }
 
 // ══════════════════════════════════════════════
