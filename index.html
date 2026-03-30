@@ -843,7 +843,7 @@ async function jsonpFetch(url) {
       mode: 'cors',
       cache: 'no-cache'
     });
-    clearTimeout(timer);
+    clearTimeout(timer);    
     if (resp.ok) {
       const text = await resp.text();
       // Strip JSONP wrapper if present
